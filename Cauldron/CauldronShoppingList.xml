@@ -1,0 +1,200 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+    <!-- $Revision: 1.2 $ -->
+    
+    <!-- templates -->
+    <Frame name="CauldronShoppingListRequestorTemplate" virtual="true">
+    	<Size x="240" y="12" />
+    	<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" 
+							text="(name)" justifyH="LEFT" justifyV="CENTER">
+					<Size x="240" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+    	</Layers>
+    </Frame>
+    
+    <Frame name="CauldronShoppingListItemTemplate" virtual="true">
+    	<Size x="240" y="12" />
+    	<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentItem" inherits="GameFontNormal" 
+							text="(item)" justifyH="LEFT" justifyV="CENTER">
+					<Size x="225" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="10" y="0"/>
+						</Anchor>
+					</Anchors>
+					<Color r="1.0" g="1.0" b="1.0" />
+				</FontString>
+			</Layer>
+    	</Layers>
+    	<Frames>
+            <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="RIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                	<OnLoad>
+                		self:SetScale(0.6);
+                	</OnLoad>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:ClearLines();
+						GameTooltip:AddLine(Cauldron:LocaleString("Remove this item from the shopping list"));
+						GameTooltip:Show();
+						CursorUpdate(self);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+						ResetCursor();
+					</OnLeave>
+                    <OnClick>
+                        Cauldron:RemoveShoppingListItem(self:GetParent().requestor, self:GetParent().itemName);
+                        Cauldron:UpdateShoppingList();
+                    </OnClick>
+                </Scripts>
+            </Button>
+    	</Frames>
+    </Frame>
+
+	<!-- main window -->
+	<Frame name="CauldronShoppingListFrame" toplevel="true" 
+		   frameStrata="LOW" parent="UIParent" 
+		   movable="true" resizable="true" enableMouse="true" hidden="true">
+		<Size x="250" y="300" />
+
+		<ResizeBounds>
+			<minResize>
+				<AbsDimension x="250" y="300"/>
+			</minResize>
+			<maxResize>
+				<AbsDimension x="400" y="900"/>
+			</maxResize>
+		</ResizeBounds>
+		<Anchors>
+			<Anchor point="TOPRIGHT" relativeTo="UIParent" relativePoint="TOPRIGHT">
+				<Offset>
+					<AbsDimension x="-50" y="-200" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" 
+				  edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="false">
+			<BackgroundInsets>
+				<AbsInset left="0" right="0" top="0" bottom="0" />
+			</BackgroundInsets>
+			<EdgeSize>
+				<AbsValue val="2" />
+			</EdgeSize>
+		</Backdrop>
+
+		<!-- Window Title -->
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentTitleText" inherits="GameFontNormal" text="Shopping List">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="CauldronShoppingListFrame" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-4"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+            <!-- Close button -->
+            <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                	<OnLoad>
+                		self:SetScale(0.75);
+                	</OnLoad>
+                    <OnClick>
+                        Cauldron:HideShoppingList();
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <ScrollFrame name="$parentItemsScrollFrame">
+            	<Size x="240" y="280" />
+            	<Anchors>
+            		<Anchor point="TOPLEFT">
+            			<Offset>
+            				<AbsDimension x="5" y="-20" />
+            			</Offset>
+            		</Anchor>
+            		<Anchor point="BOTTOMRIGHT">
+            			<Offset>
+            				<AbsDimension x="-5" y="5" />
+            			</Offset>
+            		</Anchor>
+            	</Anchors>
+            	<ScrollChild>
+            		<Frame name="$parentScrollChild">
+						<Size x="240" y="280" />
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+            		</Frame>
+            	</ScrollChild>
+            </ScrollFrame>
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				self:SetBackdropColor(.05,.05,.05,.8);
+				self:SetBackdropBorderColor(.4,.4,.4,1);
+--				tinsert(UISpecialFrames, self:GetName());
+			</OnLoad>
+			<OnShow>
+--				PlaySound("igCharacterInfoOpen");
+			</OnShow>
+			<OnHide>
+--				PlaySound("igCharacterInfoClose");
+			</OnHide>
+			<OnMouseWheel>
+				return;
+			</OnMouseWheel>
+			<OnMouseDown>
+				if button == "LeftButton" then
+					self:StartMoving();
+				end
+			</OnMouseDown>
+			<OnMouseUp>
+				if button == "LeftButton" then
+					self:StopMovingOrSizing();
+					self.isResizing = false
+					-- TradeskillInfoUI:Frame_Update()
+					CauldronShopping:SaveShoppingListFramePosition();
+				end
+			</OnMouseUp>
+			<OnSizeChanged>
+				-- TradeskillInfoUI:Frame_Update()
+			</OnSizeChanged>
+		</Scripts>
+
+	</Frame>
+
+</Ui>

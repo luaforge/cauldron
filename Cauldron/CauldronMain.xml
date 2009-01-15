@@ -1,0 +1,1554 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
+    <!-- $Revision: 1.1 $ -->
+
+    <!-- Templates -->
+    <Button name="CauldronButtonTemplate" inherits="UIPanelButtonTemplate"
+	        virtual="true">
+        <Size>
+            <AbsDimension x="80" y="20" />
+        </Size>
+        <NormalText inherits="GameFontHighlightSmall" />
+        <DisabledText inherits="GameFontDisableSmall" />
+        <HighlightText inherits="GameFontHighlightSmall" />
+        <Scripts>
+            <OnClick>
+                PlaySound("igMainMenuOptionCheckBoxOn");
+			</OnClick>
+            <OnEnter>
+                if ( self.tooltipText ) then
+                    GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+                    GameTooltip:SetText(self.tooltipText, nil, nil, nil, nil, 1);
+                end
+			</OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+			</OnLeave>
+        </Scripts>
+    </Button>
+    
+	<Button name="CauldronReagentDetailTemplate" inherits="TradeSkillItemTemplate" virtual="true">
+		<Scripts>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
+				GameTooltip:SetTradeSkillItem(self.skillIndex, self:GetID());
+				CursorUpdate(self);
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+				ResetCursor();
+			</OnLeave>
+			<OnUpdate>
+				CursorOnUpdate(self);
+			</OnUpdate>
+			<OnClick>
+				-- HandleModifiedItemClick(GetTradeSkillReagentItemLink(TradeSkillFrame.selectedSkill, self:GetID()));
+			</OnClick>
+		</Scripts>
+	</Button>
+    
+    <Button name="CauldronSkillItemFrameTemplate" virtual="true">
+    	<Size x="300" y="50" />
+    	<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentSkillName" inherits="GameFontNormal" 
+							text="(name)" justifyH="LEFT" justifyV="CENTER">
+					<Size x="250" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="62" y="-4"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSkillCategory" inherits="GameFontNormalSmall" 
+							text="(category)" justifyH="LEFT" justifyV="CENTER">
+					<Size x="250" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="62" y="-20"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSkillCooldown" inherits="GameFontRedSmall" 
+							text="(cooldown)" justifyH="RIGHT" nonSpaceWrap="true" maxLines="3"
+							hidden="true">
+					<Size x="75" y="50"/>
+					<Anchors>
+						<Anchor point="TOPRIGHT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="HIGHLIGHT" setAllPoints="true">
+				<Texture file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
+					<Color r="0.7" g="0.7" b="0.7" a="0.5" />
+				</Texture>
+			</Layer>
+    	</Layers>
+    	<Frames>
+			<Button name="$parentSkillIcon">
+				<Size>
+					<AbsDimension x="37" y="37"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="24" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="false">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="2"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self.hasItem = 1;
+					</OnLoad>
+					<OnClick>
+						HandleModifiedItemClick(GetTradeSkillItemLink(self.skillIndex));
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetTradeSkillItem(self.skillIndex);
+						CursorUpdate(self);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+						ResetCursor();
+					</OnLeave>
+					<OnUpdate>
+						if GameTooltip:IsOwned(self) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							GameTooltip:SetTradeSkillItem(self.skillIndex);
+							CursorUpdate(self);
+						end
+						CursorOnUpdate(self);
+					</OnUpdate>
+				</Scripts>
+			</Button>
+			<Button name="$parentDiscloseButton" hidden="false" inherits="ClassTrainerSkillButtonTemplate">
+				<Size>
+					<AbsDimension x="20" y="22"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentSkillIcon" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(self:GetName()):SetText("");
+					</OnLoad>
+					<OnClick>
+						Cauldron:CollapseItemButton_OnClick(self);
+					</OnClick>
+				</Scripts>
+			</Button>
+    		<Frame name="$parentReagents">
+    			<Size x="40" y="100" />
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentSkillIcon" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+    			<Layers>
+    				<Layer level="OVERLAY">
+    					<FontString name="$parentToolsInfo" inherits="GameFontNormal" 
+    								text="(tools info)" justifyH="LEFT">
+    						<Size x="250" y="12" />
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="1.0" g="1.0" b="1.0" />
+    					</FontString>
+    				</Layer>
+    			</Layers>
+    			<Frames>
+					<Button name="$parentItemDetail1" inherits="CauldronReagentDetailTemplate" id="1">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parentToolsInfo" relativePoint="BOTTOMLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentItemDetail2" inherits="CauldronReagentDetailTemplate" id="2">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentItemDetail1" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentItemDetail3" inherits="CauldronReagentDetailTemplate" id="3">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItemDetail1" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentItemDetail4" inherits="CauldronReagentDetailTemplate" id="4">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentItemDetail3" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentItemDetail5" inherits="CauldronReagentDetailTemplate" id="5">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItemDetail3" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentItemDetail6" inherits="CauldronReagentDetailTemplate" id="6">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentItemDetail5" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentItemDetail7" inherits="CauldronReagentDetailTemplate" id="7">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItemDetail7" relativePoint="BOTTOM">
+								<Offset>
+									<AbsDimension x="0" y="-3"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+					<Button name="$parentItemDetail8" inherits="CauldronReagentDetailTemplate" id="8">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentItemDetail7" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="5" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Button>
+    			</Frames>
+    		</Frame>
+    		<Frame name="$parentSelection" setAllPoints="true" enableMouse="true" hidden="true" frameStrata="LOW" frameLevel="1">
+    			<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentSelection" file="Interface\QuestFrame\UI-QuestLogTitleHighlight" alphaMode="ADD">
+							<Color r="0.5" g="0.5" b="0.5" a="0.5" />
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+    	</Frames>
+    	<Scripts>
+    		<OnEnter>
+    			Cauldron:SkillItem_OnEnter(self);
+    		</OnEnter>
+    		<OnLeave>
+    			Cauldron:SkillItem_OnLeave(self);
+    		</OnLeave>
+    		<OnClick>
+                PlaySound("igMainMenuOptionCheckBoxOn");
+    			Cauldron:SkillItem_OnClick(self, button, down);
+    		</OnClick>
+    	</Scripts>
+    </Button>
+    
+    <Button name="CauldronQueueItemFrameTemplate" virtual="true" enableMouse="true">
+    	<Size x="300" y="40" />
+    	<Layers>
+			<Layer level="OVERLAY">
+	    		<!-- item name -->
+				<FontString name="$parentItemName" inherits="GameFontNormal" 
+							text="(name)" justifyH="LEFT" justifyV="CENTER">
+					<Size x="250" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="40" y="-4"/>
+						</Anchor>
+					</Anchors>
+					<Color r="0.2" g="0.2" b="0.2" />
+				</FontString>
+				<!-- quantity info -->
+				<FontString name="$parentInfo" inherits="GameFontNormal" 
+							text="(info)" justifyH="LEFT" justifyV="CENTER">
+					<Size x="250" y="12"/>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="40" y="-18"/>
+						</Anchor>
+					</Anchors>
+					<!-- Color r="1.0" g="1.0" b="1.0" / -->
+				</FontString>
+			</Layer>
+    	</Layers>
+    	<Frames>
+    		<!-- icon -->
+			<Button name="$parentIcon">
+				<Size x="37" y="37"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="2" y="-3"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="false">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset x="-5" y="2"/>
+								</Anchor>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						-- self.hasItem = 1;
+					</OnLoad>
+					<OnClick>
+						-- HandleModifiedItemClick(GetTradeSkillItemLink(TradeSkillFrame.selectedSkill));
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						if self.skillIndex then
+							GameTooltip:SetTradeSkillItem(self.skillIndex, self.reagentIndex);
+						end
+						CursorUpdate(self);
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+						ResetCursor();
+					</OnLeave>
+					<OnUpdate>
+						if GameTooltip:IsOwned(self) then
+							GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+							if self.skillIndex then
+								GameTooltip:SetTradeSkillItem(self.skillIndex, self.reagentIndex);
+							end
+							CursorUpdate(self);
+						end
+						CursorOnUpdate(self);
+					</OnUpdate>
+				</Scripts>
+			</Button>
+			<Button name="$parentRemoveItem" inherits="UIPanelCloseButton" hidden="true">
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                	<OnEnter>
+                		self:GetParent().inHoverButtons = true;
+                		
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:ClearLines();
+						GameTooltip:AddLine(Cauldron:LocaleString("Remove this item from the queue"));
+						GameTooltip:Show();
+						CursorUpdate(self);
+                	</OnEnter>
+                	<OnLeave>
+                		self:GetParent().inHoverButtons = false;
+                		
+                		GameTooltip:Hide();
+                		ResetCursor();
+                	</OnLeave>
+                    <OnClick>
+                    	Cauldron:RemoveQueueItem(self:GetParent().itemName);
+                    	Cauldron:UpdateQueue();
+                    	Cauldron:UpdateButtons();
+                    </OnClick>
+                </Scripts>
+            </Button>
+			<Button name="$parentAddToShoppingList" inherits="UIPanelCloseButton" hidden="true">
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                	<OnEnter>
+                		self:GetParent().inHoverButtons = true;
+
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:ClearLines();
+						GameTooltip:AddLine(Cauldron:LocaleString("Add this item to the shopping list"));
+						GameTooltip:Show();
+						CursorUpdate(self);
+                	</OnEnter>
+                	<OnLeave>
+                		self:GetParent().inHoverButtons = false;
+                		
+                		GameTooltip:Hide();
+                		ResetCursor();
+                	</OnLeave>
+                    <OnClick>
+                    	Cauldron:AddItemToShoppingList(self:GetParent().itemName, self:GetParent().needAmount);
+                    	Cauldron:UpdateShoppingList();
+                    </OnClick>
+                </Scripts>
+				<NormalTexture file="Interface\Buttons\UI-PlusButton-Up" />
+				<PushedTexture file="Interface\Buttons\UI-PlusButton-Down" />
+				<DisabledTexture file="Interface\Buttons\UI-PlusButton-Disabled" />
+				<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD" />
+            </Button>
+			<Button name="$parentDecrementCount" hidden="true" inherits="ClassTrainerSkillButtonTemplate">
+				<Size>
+					<AbsDimension x="23" y="22" />
+				</Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="-2"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("AnyUp");
+					</OnLoad>
+                	<OnEnter>
+                		self:GetParent().inHoverButtons = true;
+
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:ClearLines();
+						GameTooltip:AddLine(Cauldron:LocaleString("Decrease the amount of this item"));
+						GameTooltip:Show();
+						CursorUpdate(self);
+                	</OnEnter>
+                	<OnLeave>
+                		self:GetParent().inHoverButtons = false;
+                		
+                		GameTooltip:Hide();
+                		ResetCursor();
+                	</OnLeave>
+					<OnClick>
+						Cauldron:DecreaseItemCount(self:GetParent().itemName);
+						Cauldron:UpdateQueue();
+                    	Cauldron:UpdateButtons();
+					</OnClick>
+				</Scripts>
+				<!--
+				<NormalTexture file="Interface\Buttons\UI-MinusButton-Up" />
+				<PushedTexture file="Interface\Buttons\UI-MinusButton-Down" />
+				<DisabledTexture file="Interface\Buttons\UI-MinusButton-Disabled" />
+				<HighlightTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD" />
+				-->
+			</Button>
+			<Button name="$parentIncreasePriority" hidden="true">
+				<Size>
+					<AbsDimension x="23" y="22" />
+				</Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-16" y="-20"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("AnyUp");
+					</OnLoad>
+                	<OnEnter>
+                		self:GetParent().inHoverButtons = true;
+
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:ClearLines();
+						GameTooltip:AddLine(Cauldron:LocaleString("Increase the priority of this item"));
+						GameTooltip:AddLine(Cauldron:LocaleString("Shift-click to move to the top of the queue"));
+						GameTooltip:Show();
+						CursorUpdate(self);
+                	</OnEnter>
+                	<OnLeave>
+                		self:GetParent().inHoverButtons = false;
+                		
+                		GameTooltip:Hide();
+                		ResetCursor();
+                	</OnLeave>
+					<OnClick>
+						Cauldron:IncreaseItemPriority(self:GetParent().itemName, IsShiftKeyDown());
+						Cauldron:UpdateQueue();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Up" />
+				<PushedTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Down" />
+				<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Disabled" />
+				<HighlightTexture file="Interface\Buttons\UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD" />
+			</Button>
+			<Button name="$parentDecreasePriority" hidden="true">
+				<Size>
+					<AbsDimension x="23" y="22" />
+				</Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="-20"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("AnyUp");
+					</OnLoad>
+                	<OnEnter>
+                		self:GetParent().inHoverButtons = true;
+
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:ClearLines();
+						GameTooltip:AddLine(Cauldron:LocaleString("Decrease the priority of this item"));
+						GameTooltip:AddLine(Cauldron:LocaleString("Shift-click to move to the bottom of the queue"));
+						GameTooltip:Show();
+						CursorUpdate(self);
+                	</OnEnter>
+                	<OnLeave>
+                		self:GetParent().inHoverButtons = false;
+                		
+                		GameTooltip:Hide();
+                		ResetCursor();
+                	</OnLeave>
+					<OnClick>
+						Cauldron:DecreaseItemPriority(self:GetParent().itemName, IsShiftKeyDown());
+						Cauldron:UpdateQueue();
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Up" />
+				<PushedTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Down" />
+				<DisabledTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Disabled" />
+				<HighlightTexture file="Interface\Buttons\UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD" />
+			</Button>
+    	</Frames>
+    	<Scripts>
+    		<OnEnter>
+    			if self.removeable then
+    				_G[self:GetName().."RemoveItem"]:Show();
+    				_G[self:GetName().."DecreasePriority"]:Show();
+    				_G[self:GetName().."IncreasePriority"]:Show();
+    				_G[self:GetName().."DecrementCount"]:Show();
+    			end
+    			if self.shoppable then
+    				_G[self:GetName().."AddToShoppingList"]:Show();
+    			end
+    		</OnEnter>
+    		<OnLeave>
+    			if not self.inHoverButtons then
+					_G[self:GetName().."RemoveItem"]:Hide();
+    				_G[self:GetName().."DecreasePriority"]:Hide();
+    				_G[self:GetName().."IncreasePriority"]:Hide();
+    				_G[self:GetName().."DecrementCount"]:Hide();
+    				_G[self:GetName().."AddToShoppingList"]:Hide();
+				end
+    		</OnLeave>
+    	</Scripts>
+    </Button>
+    
+    <!-- Main frame -->
+    <Frame name="CauldronFrame" toplevel="true" frameStrata="MEDIUM"
+           movable="true" resizable="false" parent="UIParent" enableMouse="true"
+           hidden="true">
+        <Size>
+            <AbsDimension x="692" y="465" />
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER" />
+        </Anchors>
+
+        <!-- Window border and background -->
+        <Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="CauldronFramePortrait">
+					<Size>
+						<AbsDimension x="60" y="60"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-6"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentDummyString" inherits="GameFontNormal" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset x="0" y="0"/>
+						</Anchor>
+					</Anchors>
+					<Size x="0" y="0"/>
+				</FontString>
+			  </Layer>
+
+            <Layer level="BORDER">
+                <Texture name="CauldronFrameBorderTopLeft"
+                    file="Interface\AddOns\Cauldron\Artwork\Cauldron-Main-TopLeft">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="0" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="CauldronFrameBorderTopMiddle"
+                    file="Interface\AddOns\Cauldron\Artwork\Cauldron-Main-TopMiddle">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="256" y="0" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="CauldronFrameBorderTopRight"
+                    file="Interface\AddOns\Cauldron\Artwork\Cauldron-Main-TopRight">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="512" y="0" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="CauldronFrameBorderBottomLeft"
+                    file="Interface\AddOns\Cauldron\Artwork\Cauldron-Main-BottomLeft">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="-256" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="CauldronFrameBorderBottomMiddle"
+                    file="Interface\AddOns\Cauldron\Artwork\Cauldron-Main-BottomMiddle">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="256" y="-256" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="CauldronFrameBorderBottomRight"
+                    file="Interface\AddOns\Cauldron\Artwork\Cauldron-Main-BottomRight">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="512" y="-256" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+
+            <Layer level="ARTWORK">
+                <FontString name="CauldronFrameTitleText" inherits="GameFontNormal" text="Cauldron">
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="CauldronFrame"
+                            relativePoint="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-18" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+
+        <Frames>
+            <!-- Link button -->
+            <Button name="TradeSkillLinkButton" frameStrata="HIGH">
+                <Size>
+                    <AbsDimension x="32" y="16" />
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="CauldronFrameTitleText"
+                        relativePoint="RIGHT">
+                        <Offset>
+                            <AbsDimension x="5" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        local link=GetTradeSkillListLink();
+                        if (not ChatEdit_InsertLink(link) ) then
+                            ChatFrameEditBox:Show();
+                            ChatEdit_InsertLink(link);
+                        end
+                    </OnClick>
+                    <OnEnter>
+                        GameTooltip:SetOwner(self,"ANCHOR_TOPLEFT");
+                        GameTooltip:SetText(LINK_TRADESKILL_TOOLTIP, nil, nil, nil, nil, 1);
+                        GameTooltip:Show();
+                    </OnEnter>
+                    <OnLeave>
+                        GameTooltip:Hide();
+                    </OnLeave>
+                </Scripts>
+                <NormalTexture file="Interface\TradeSkillFrame\UI-TradeSkill-LinkButton">
+                    <TexCoords left="0" right="1.0" top="0" bottom="0.5" />
+                </NormalTexture>
+                <HighlightTexture file="Interface\TradeSkillFrame\UI-TradeSkill-LinkButton" alphaMode="ADD">
+                    <TexCoords left="0" right="1.0" top="0.5" bottom="1.0" />
+                </HighlightTexture>
+            </Button>
+
+            <!-- Filters frame -->
+            <Frame name="CauldronFiltersFrame">
+                <Size>
+                    <AbsDimension x="300" y="60" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="CauldronFrame" relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="54" y="-35" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+
+                <Frames>
+                    <!-- filter dropdown -->
+                    <Frame name="CauldronFiltersFilterDropDown" inherits="UIDropDownMenuTemplate" id="1">
+                        <Size>
+                            <AbsDimension x="140" y="20" />
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="CauldronFiltersFrame" relativePoint="TOPLEFT">
+                                <Offset>
+                                    <AbsDimension x="0" y="0"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                Cauldron:FilterDropDown_OnLoad(self);
+                            </OnLoad>
+                        </Scripts>
+                    </Frame>
+
+                    <!-- search text box -->
+			        <EditBox name="CauldronFiltersSearchEditBox" autoFocus="false">
+				        <Size>
+					       <AbsDimension x="130" y="20"/>
+				        </Size>
+				        <Anchors>
+					       <Anchor point="TOPLEFT" relativeTo="CauldronFiltersFrame" relativePoint="TOPLEFT">
+						      <Offset x="155" y="-2" />
+					       </Anchor>
+				        </Anchors>
+                        
+				        <Layers>
+					       <Layer level="BACKGROUND">
+						      <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+							     <Size>
+								    <AbsDimension x="8" y="20"/>
+							     </Size>
+							     <Anchors>
+								    <Anchor point="TOPLEFT">
+									   <Offset x="-5" y="0"/>
+								    </Anchor>
+							     </Anchors>
+							     <TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
+						      </Texture>
+						      <Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+							     <Size>
+								    <AbsDimension x="8" y="20"/>
+							     </Size>
+							     <Anchors>
+								    <Anchor point="RIGHT">
+									   <Offset x="0" y="0"/>
+								    </Anchor>
+							     </Anchors>
+							     <TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
+						      </Texture>
+						      <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+							     <Size>
+								    <AbsDimension x="0" y="20"/>
+							     </Size>
+							     <Anchors>
+								    <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT"/>
+								    <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT"/>
+							     </Anchors>
+							     <TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
+						      </Texture>
+					       </Layer>
+				        </Layers>
+				        <Scripts>
+					       <OnShow>
+						      	self:SetText(SEARCH);
+							</OnShow>
+							<OnEnterPressed>
+								self:ClearFocus();
+							</OnEnterPressed>
+							<OnEscapePressed>
+								self:ClearFocus();
+							</OnEscapePressed>
+							<OnTextChanged>
+								Cauldron:TradeSkillFilter_OnTextChanged(self);
+							</OnTextChanged>
+							<OnEditFocusLost>
+								self:HighlightText(0, 0);
+								if self:GetText() == "" then
+									self:SetText(SEARCH);
+								end
+							</OnEditFocusLost>
+							<OnEditFocusGained>
+								self:HighlightText();
+								if self:GetText() == SEARCH then
+									self:SetText("");
+								end
+							</OnEditFocusGained>
+						</Scripts>
+						<FontString inherits="ChatFontSmall"/>
+					</EditBox>
+
+                    <!-- category dropdown -->
+                    <Frame name="CauldronFiltersCategoryDropDown" inherits="UIDropDownMenuTemplate" id="4">
+                        <Size>
+                            <AbsDimension x="140" y="20" />
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="CauldronFiltersFrame" relativePoint="TOPLEFT">
+                                <Offset>
+                                    <AbsDimension x="0" y="-25"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                Cauldron:CategoryDropDown_OnLoad(self);
+                            </OnLoad>
+                        </Scripts>
+                    </Frame>
+
+                    <!-- slot dropdown -->
+                    <Frame name="CauldronFiltersInvSlotDropDown" inherits="UIDropDownMenuTemplate" id="3">
+                        <Size>
+                            <AbsDimension x="140" y="20" />
+                        </Size>
+                        <Anchors>
+                            <Anchor point="TOPLEFT" relativeTo="CauldronFiltersFrame" relativePoint="TOPLEFT">
+                                <Offset>
+                                    <AbsDimension x="137" y="-25"/>
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                Cauldron:InvSlotDropDown_OnLoad(self);
+                            </OnLoad>
+                        </Scripts>
+                    </Frame>
+
+                </Frames>
+            </Frame>
+
+            <!-- List frame -->
+            <Frame name="CauldronSkillListFrame">
+                <Size>
+                    <AbsDimension x="342" y="100" />
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="CauldronFrame" relativePoint="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="14" y="-90" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+
+                <Frames>
+					<Frame name="$parentExpandButtonFrame">
+						<Size>
+							<AbsDimension x="54" y="33"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-3" y="20"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture name="$parentExpandTabLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-ExpandTab-Left">
+									<Size>
+										<AbsDimension x="8" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentExpandTabMiddle" file="Interface\QuestFrame\UI-QuestLogSortTab-Middle">
+									<Size>
+										<AbsDimension x="38" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentExpandTabLeft" relativePoint="RIGHT">
+											<Offset>
+												<AbsDimension x="0" y="6"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentExpandTabRight" file="Interface\QuestFrame\UI-QuestLogSortTab-Right">
+									<Size>
+										<AbsDimension x="8" y="32"/>
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parentExpandTabMiddle" relativePoint="RIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Button name="$parentCollapseAllButton" hidden="false" inherits="ClassTrainerSkillButtonTemplate">
+								<Size>
+									<AbsDimension x="40" y="22"/>
+								</Size>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentExpandTabLeft" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="0" y="3"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								<Scripts>
+									<OnLoad>
+										getglobal(self:GetName()):SetText(ALL);
+									</OnLoad>
+									<OnClick>
+										Cauldron:CollapseAllButton_OnClick(self);
+									</OnClick>
+								</Scripts>
+							</Button>
+						</Frames>
+					</Frame>
+					<ScrollFrame name="$parentScrollFrame" inherits="ClassTrainerDetailScrollFrameTemplate">
+						<Size x="300" y="338" />
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="CauldronSkillListFrame" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="-8"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<ScrollChild>
+							<Frame name="$parentScrollChild">
+								<Size x="300" y="338" />
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+								<Frames>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+                </Frames>
+            </Frame>
+
+            <!-- Skill Info frame -->
+            <Frame name="CauldronSkillInfoFrame">
+                <Size x="330" y="100" />
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="CauldronFrame" relativePoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-10" y="-36" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                
+                <Layers>
+                    <Layer level="OVERLAY">
+                        <FontString inherits="GameFontNormal" text="Queue">
+                            <Anchors>
+                                <Anchor point="TOP" relativeTo="CauldronSkillInfoFrame" relativePoint="TOP">
+                                    <Offset>
+                                        <AbsDimension x="0" y="-18" />
+                                    </Offset>
+                                </Anchor>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+
+                <Frames>
+        			<StatusBar name="CauldronRankFrame" drawLayer="ARTWORK" 
+        					   minValue="0" maxValue="1" defaultValue="0" 
+        					   enableMouse="false">
+        				<Size x="325" y="14"/>
+        				<Anchors>
+        					<Anchor point="TOPLEFT">
+        						<Offset>
+        							<AbsDimension x="0" y="-2"/>
+        						</Offset>
+        					</Anchor>
+        				</Anchors>
+        				<Layers>
+        					<Layer level="OVERLAY">
+                                <FontString name="$parentSkillName" inherits="GameFontHighlightSmall" justifyH="LEFT">
+                                    <Size x="320" y="9"/>
+                                    <Anchors>
+                                        <Anchor point="TOP" relativeTo="CauldronRankFrame">
+                                            <Offset>
+                                                <AbsDimension x="0" y="-2"/>
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                    <Color r="1.0" g="1.0" b="0.0" a="1.0" />
+                                </FontString>
+        						<FontString name="$parentSkillRank" inherits="GameFontHighlightSmall" justifyH="RIGHT">
+        							<Size x="320" y="9"/>
+        							<Anchors>
+        								<Anchor point="TOP" relativeTo="CauldronRankFrame">
+        									<Offset>
+        										<AbsDimension x="0" y="-2"/>
+        									</Offset>
+        								</Anchor>
+        							</Anchors>
+        						</FontString>
+        					</Layer>
+        					<Layer level="BORDER">
+        						<Texture name="$parentBorder" file="Interface\PaperDollInfoFrame\UI-Character-Skills-BarBorder">
+        							<Size x="334" y="27"/>
+        							<Anchors>
+        								<Anchor point="LEFT">
+        									<Offset>
+        										<AbsDimension x="-5" y="0"/>
+        									</Offset>
+        								</Anchor>
+        							</Anchors>
+        						</Texture>
+        					</Layer>
+        					<Layer level="BACKGROUND">
+        						<Texture name="$parentBackground">
+        							<Color r="1.0" g="1.0" b="1.0" a="0.2"/>
+        						</Texture>
+        					</Layer>
+        				</Layers>
+        				<Scripts>
+        					<OnLoad>
+        						self:RegisterEvent("SKILL_LINES_CHANGED");
+        					</OnLoad>
+        					<OnEvent>
+        						if event == "SKILL_LINES_CHANGED" then
+        							-- update known skills
+        							
+        							-- redraw the frame
+        							Cauldron:Frame_Update();
+        						end
+        					</OnEvent>
+        				</Scripts>
+        				<BarTexture name="$parentBar" file="Interface\PaperDollInfoFrame\UI-Character-Skills-Bar" drawLayer="ARTWORK" />
+        				<BarColor r="0.25" g="0.25" b="0.75" />
+        			</StatusBar>
+                </Frames>
+            </Frame>
+
+            <!-- Queue frame -->
+            <Frame name="CauldronQueueFrame">
+                <Size x="320" y="400" />
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="CauldronFrame" relativePoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-20" y="-76" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+
+                <Frames>
+                	<Frame name="$parentQueueEmpty">
+						<Size x="302" y="360" />
+                		<Anchors>
+                			<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0" />
+								</Offset>
+                			</Anchor>
+                		</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString name="$parentText" inherits="QuestTitleFont" 
+											text="The queue is empty!"
+											justifyH="CENTER" justifyV="CENTER">
+									<Size x="302" y="360" />
+									<Anchors>
+										<Anchor point="TOPLEFT">
+											<Offset>
+												<AbsDimension x="0" y="0" />
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<Color r="0.2" g="0.2" b="0.2" />
+								</FontString>
+							</Layer>
+						</Layers>
+                	</Frame>
+                	
+					<ScrollFrame name="$parentScrollFrame" inherits="ClassTrainerDetailScrollFrameTemplate" hidden="true">
+						<Size x="302" y="360" />
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset x="0" y="0"/>
+							</Anchor>
+						</Anchors>
+						<ScrollChild>
+							<Frame name="$parentQueueSections">
+								<Size x="302" y="360" />
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset x="0" y="0"/>
+									</Anchor>
+								</Anchors>
+								<Frames>
+									<Frame name="$parentMainItemsHeader">
+										<Size x="300" y="12" />
+										<Anchors>
+											<Anchor point="TOPLEFT">
+												<Offset x="0" y="0" />
+											</Anchor>
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="$parentText" inherits="QuestFont" text="">
+													<Anchors>
+														<Anchor point="TOPLEFT">
+															<Offset x="0" y="0" />
+														</Anchor>
+													</Anchors>
+													<Color r="0.2" g="0.2" b="0.2" />
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+									<Frame name="$parentMainItems">
+										<Size x="300" y="1" />
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="$parentMainItemsHeader" relativePoint="BOTTOMLEFT">
+												<Offset x="0" y="-2" />
+											</Anchor>
+										</Anchors>
+									</Frame>
+									<Frame name="$parentSecondaryItemsHeader">
+										<Size x="300" y="12" />
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="$parentMainItems" relativePoint="BOTTOMLEFT">
+												<Offset x="0" y="-2" />
+											</Anchor>
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="$parentText" inherits="QuestFont" text="">
+													<Anchors>
+														<Anchor point="TOPLEFT">
+															<Offset x="0" y="0" />
+														</Anchor>
+													</Anchors>
+													<Color r="0.2" g="0.2" b="0.2" />
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+									<Frame name="$parentSecondaryItems">
+										<Size x="300" y="1" />
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="$parentSecondaryItemsHeader" relativePoint="BOTTOMLEFT">
+												<Offset x="0" y="-2" />
+											</Anchor>
+										</Anchors>
+									</Frame>
+									<Frame name="$parentReagentsHeader">
+										<Size x="300" y="12" />
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="$parentSecondaryItems" relativePoint="BOTTOMLEFT">
+												<Offset x="0" y="-2" />
+											</Anchor>
+										</Anchors>
+										<Layers>
+											<Layer level="OVERLAY">
+												<FontString name="$parentText" inherits="QuestFont" text="">
+													<Anchors>
+														<Anchor point="TOPLEFT">
+															<Offset x="0" y="0" />
+														</Anchor>
+													</Anchors>
+													<Color r="0.2" g="0.2" b="0.2" />
+												</FontString>
+											</Layer>
+										</Layers>
+									</Frame>
+									<Frame name="$parentReagents">
+										<Size x="300" y="1" />
+										<Anchors>
+											<Anchor point="TOPLEFT" relativeTo="$parentReagentsHeader" relativePoint="BOTTOMLEFT">
+												<Offset x="0" y="-2" />
+											</Anchor>
+										</Anchors>
+									</Frame>
+								</Frames>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+                </Frames>
+            </Frame>
+            
+            <!-- Close button -->
+            <Button name="CauldronFrameCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="CauldronFrame" relativePoint="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-2" y="-8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        HideUIPanel(TradeSkillFrame);
+						PlaySound("igCharacterInfoClose");
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+            <!-- Buttons frame -->
+            <Frame name="CauldronButtonsFrame">
+                <Size>
+                    <AbsDimension x="684" y="25" />
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" relativeTo="CauldronFrame"
+                        relativePoint="BOTTOMLEFT">
+                        <Offset>
+                            <AbsDimension x="13" y="0" />
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+
+                <Frames>
+
+                    <!-- Queue All button -->
+                    <Button name="CauldronQueueAllButton"
+                        inherits="CauldronButtonTemplate" text="Queue All">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset>
+                                    <AbsDimension x="0" y="0" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                getglobal(self:GetName()):Disable();
+                            </OnLoad>
+                            <OnClick>
+                            	Cauldron:QueueAllTradeSkillItem();
+								Cauldron:UpdateQueue();
+                            	Cauldron:UpdateButtons();
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+
+                    <!-- Create All button (disabled) -->
+                    <Button name="CauldronCreateAllButton" inherits="CauldronButtonTemplate" text="CREATE_ALL">
+                        <Anchors>
+                            <Anchor point="LEFT"
+                                relativeTo="CauldronQueueAllButton"
+                                relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="0" y="0" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                getglobal(self:GetName()):Disable();
+                            </OnLoad>
+							<OnClick>
+								Cauldron:CreateAllTradeSkillItem();
+							</OnClick>
+                        </Scripts>
+                    </Button>
+
+                    <!-- Number input -->
+                    <Button name="CauldronAmountDecrementButton">
+                        <Size>
+                            <AbsDimension x="23" y="22" />
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="CauldronCreateAllButton" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="0" y="0" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                Cauldron:AmountDecrement_OnClick();
+                                CauldronAmountInputBox:ClearFocus();
+							</OnClick>
+                        </Scripts>
+                        <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up" />
+                        <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down" />
+                        <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled" />
+                        <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+                    </Button>
+                    <EditBox name="CauldronAmountInputBox" letters="3" numeric="true" autoFocus="false">
+                        <Size>
+                            <AbsDimension x="30" y="20" />
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="CauldronAmountDecrementButton" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="4" y="0" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Layers>
+                            <Layer level="BACKGROUND">
+                                <Texture name="$parentLeft" file="Interface\Common\Common-Input-Border">
+                                    <Size>
+                                        <AbsDimension x="8"
+                                            y="20" />
+                                    </Size>
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT">
+                                            <Offset>
+                                                <AbsDimension
+                                                    x="-5" y="0" />
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                    <TexCoords left="0" right="0.0625" top="0" bottom="0.625" />
+                                </Texture>
+                                <Texture name="$parentRight" file="Interface\Common\Common-Input-Border">
+                                    <Size>
+                                        <AbsDimension x="8" y="20" />
+                                    </Size>
+                                    <Anchors>
+                                        <Anchor point="RIGHT">
+                                            <Offset>
+                                                <AbsDimension x="0" y="0" />
+                                            </Offset>
+                                        </Anchor>
+                                    </Anchors>
+                                    <TexCoords left="0.9375" right="1.0" top="0" bottom="0.625" />
+                                </Texture>
+                                <Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+                                    <Size>
+                                        <AbsDimension x="10" y="20" />
+                                    </Size>
+                                    <Anchors>
+                                        <Anchor point="LEFT" relativeTo="$parentLeft" relativePoint="RIGHT" />
+                                        <Anchor point="RIGHT" relativeTo="$parentRight" relativePoint="LEFT" />
+                                    </Anchors>
+                                    <TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625" />
+                                </Texture>
+                            </Layer>
+                        </Layers>
+                        <Scripts>
+                        	<OnLoad>
+                        		self:SetText("1");
+                        	</OnLoad>
+                            <OnEnterPressed>
+                                self:ClearFocus();
+							</OnEnterPressed>
+                            <OnEscapePressed>
+                                self:ClearFocus();
+							</OnEscapePressed>
+                            <OnTextChanged>
+                                if ( self:GetText() == "0" ) then
+									self:SetText("1");
+                                end
+							</OnTextChanged>
+                            <OnEditFocusLost>
+                                self:HighlightText(0, 0);
+							</OnEditFocusLost>
+                            <OnEditFocusGained>
+                                self:HighlightText();
+							</OnEditFocusGained>
+                        </Scripts>
+                        <FontString inherits="ChatFontNormal" />
+                    </EditBox>
+                    <Button name="CauldronAmountIncrementButton">
+                        <Size>
+                            <AbsDimension x="23" y="22" />
+                        </Size>
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="CauldronAmountInputBox" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="-3" y="0" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                Cauldron:AmountIncrement_OnClick();
+                                CauldronAmountInputBox:ClearFocus();
+                            </OnClick>
+                        </Scripts>
+                        <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up" />
+                        <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down" />
+                        <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled" />
+                        <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD" />
+                    </Button>
+
+                    <!-- Create button (disabled) -->
+                    <Button name="CauldronCreateButton" inherits="CauldronButtonTemplate" text="CREATE">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="CauldronAmountIncrementButton" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="0" y="0" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                getglobal(self:GetName()):Disable();
+                            </OnLoad>
+							<OnClick>
+								Cauldron:CreateTradeSkillItem();
+							</OnClick>
+                        </Scripts>
+                    </Button>
+
+                    <!-- Queue button -->
+                    <Button name="CauldronQueueButton" inherits="CauldronButtonTemplate" text="Queue">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="CauldronCreateButton" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="0" y="0" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                getglobal(self:GetName()):Disable();
+                            </OnLoad>
+							<OnClick>
+								Cauldron:QueueTradeSkillItem();
+								Cauldron:UpdateQueue();
+                            	Cauldron:UpdateButtons();
+							</OnClick>
+                        </Scripts>
+                    </Button>
+
+                    <!-- spacer -->
+
+                    <!-- Process button (disabled) -->
+                    <Button name="CauldronProcessButton" inherits="CauldronButtonTemplate" text="Process">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="CauldronQueueButton" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="10" y="0" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                getglobal(self:GetName()):Disable();
+                            </OnLoad>
+							<OnClick>
+								Cauldron:ProcessQueue();
+							</OnClick>
+                        </Scripts>
+                    </Button>
+
+                    <!-- Clear Queue button (disabled) -->
+                    <Button name="CauldronClearQueueButton" inherits="CauldronButtonTemplate" text="Clear Queue">
+                        <Size x="90" y="20" />
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="CauldronProcessButton" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="0" y="0" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnLoad>
+                                getglobal(self:GetName()):Disable();
+                            </OnLoad>
+							<OnClick>
+								CauldronQueue:ClearQueue(Cauldron:GetQueue());
+								Cauldron:UpdateQueue();
+							</OnClick>
+                        </Scripts>
+                    </Button>
+
+                    <!-- spacer -->
+
+                    <!-- Close button -->
+                    <Button name="CauldronCloseButton" inherits="CauldronButtonTemplate" text="CLOSE">
+                        <Anchors>
+                            <Anchor point="LEFT" relativeTo="CauldronClearQueueButton" relativePoint="RIGHT">
+                                <Offset>
+                                    <AbsDimension x="12" y="0" />
+                                </Offset>
+                            </Anchor>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+								HideUIPanel(TradeSkillFrame);
+								PlaySound("igCharacterInfoClose");
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                </Frames>
+            </Frame>
+        </Frames>
+
+        <Scripts>
+            <OnLoad>
+                self:SetBackdropColor(.05,.05,.05,.8);
+                self:SetBackdropBorderColor(.4,.4,.4,1);
+                tinsert(UISpecialFrames, self:GetName());
+            </OnLoad>
+            <OnShow>
+                PlaySound("igCharacterInfoOpen");
+            </OnShow>
+            <OnHide>
+                --HideUIPanel(CauldronFrame);
+                PlaySound("igCharacterInfoClose");
+            </OnHide>
+            <OnMouseWheel>
+                return;
+            </OnMouseWheel>
+        </Scripts>
+    </Frame>
+
+</Ui>

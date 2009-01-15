@@ -1,0 +1,11 @@
+<!-- $Revision: 1.2 $ -->
+<Bindings>
+	<Binding name="TOGGLE_CAULDRONSHOPPINGLIST" header="CAULDRON">
+       	Cauldron:ShoppingList_Toggle();
+	</Binding>
+	<!--
+	<Binding name="TOGGLE_CAULDRONCONFIG">
+       	Cauldron:Config_Toggle();
+	</Binding>
+	-->
+</Bindings>
