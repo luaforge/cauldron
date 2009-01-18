@@ -1,4 +1,4 @@
--- $Revision: 1.1 $
+-- $Revision: 1.2 $
 -- Cauldron shopping list UI functions
 
 function Cauldron:ShoppingList_Toggle()
@@ -96,11 +96,11 @@ function Cauldron:UpdateShoppingList()
 			-- place the frame in the scroll view
 			if frameAbove then
 				-- anchor to the frame above
-				self:Debug("UpdateShoppingList: anchor frame to top left of frame above");
+				self:debug("UpdateShoppingList: anchor frame to top left of frame above");
 				shoppingListRequestor:SetPoint("TOPLEFT", frameAbove, "BOTTOMLEFT", 0, -2);
 			else
 				-- anchor to the parent
-				self:Debug("UpdateShoppingList: anchor frame to parent");
+				self:debug("UpdateShoppingList: anchor frame to parent");
 				shoppingListRequestor:SetPoint("TOPLEFT", CauldronShoppingListFrameItemsScrollFrameScrollChild, "TOPLEFT", 0, 0);
 			end
 	
@@ -133,7 +133,7 @@ function Cauldron:UpdateShoppingList()
 				-- place the frame in the scroll view
 				if frameAbove then
 					-- anchor to the frame above
-					self:Debug("UpdateShoppingList: anchor frame to top left of frame above");
+					self:debug("UpdateShoppingList: anchor frame to top left of frame above");
 					shoppingListItem:SetPoint("TOPLEFT", frameAbove, "BOTTOMLEFT", 0, 0);
 				end
 		

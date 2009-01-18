@@ -1,11 +1,11 @@
--- $Revision: 1.1 $
+-- $Revision: 1.2 $
 -- Cauldron main file
 
-Cauldron = LibStub("AceAddon-3.0"):NewAddon("Cauldron", "AceEvent-3.0", "AceTimer-3.0", "AceConsole-3.0", "AceHook-3.0", "LibDebugLog-1.0")
+Cauldron = LibStub("AceAddon-3.0"):NewAddon("Cauldron", "AceEvent-3.0", "AceTimer-3.0", "AceConsole-3.0", "AceHook-3.0", "LibLogger-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Cauldron")
 
-Cauldron.version = "0.1." .. string.sub("$Revision: 1.1 $", 12, -3);
-Cauldron.date = string.sub("$Date: 2009-01-15 18:09:33 $", 8, 17);
+Cauldron.version = "0.1." .. string.sub("$Revision: 1.2 $", 12, -3);
+Cauldron.date = string.sub("$Date: 2009-01-18 03:14:51 $", 8, 17);
 
 -- key binding names
 BINDING_HEADER_CAULDRON = "Cauldron";
@@ -19,8 +19,10 @@ Cauldron.vars = {};
 
 Cauldron.libs = {};
 Cauldron.libs.Abacus = LibStub("LibAbacus-3.0");
+Cauldron.libs.PT = LibStub("LibPeriodicTable-3.1");
 
-Cauldron:ToggleDebugLog(false);
+-- Cauldron:ToggleDebugLog(false);
+Cauldron:SetLogLevel(Cauldron.logLevels.INFO);
 
 CURRENT_TRADESKILL = "";
 
@@ -61,7 +63,7 @@ function Cauldron:OnInitialize()
 end
 
 function Cauldron:InitPlayer()
-	self:Debug("InitPlayer enter");
+	self:debug("InitPlayer enter");
 	
 	if not self.vars.playername then
 		self.vars.playername = UnitName("player");
@@ -82,11 +84,11 @@ function Cauldron:InitPlayer()
 		end
 	end
 	
-	self:Debug("InitPlayer exit");
+	self:debug("InitPlayer exit");
 end
 
 function Cauldron:OnEnable()
-	self:Debug("OnEnable enter");
+	self:debug("OnEnable enter");
 
 	self:InitPlayer();
 	self:RegisterEvent("TRADE_SKILL_SHOW", "OnTradeShow");
@@ -115,17 +117,17 @@ function Cauldron:OnEnable()
 	self:RegisterEvent("UI_ERROR_MESSAGE", "OnError");
 	self:HookTooltips();
 
-	self:Debug("OnEnable exit");
+	self:debug("OnEnable exit");
 end
 
 function Cauldron:OnDisable()
-	self:Debug("OnDisable enter");
+	self:debug("OnDisable enter");
 	
-	self:Debug("OnDisable exit");
+	self:debug("OnDisable exit");
 end
 
 function Cauldron:OnAddonLoaded(event, addon)
-	self:Debug("OnAddonLoaded enter");
+	self:debug("OnAddonLoaded enter");
 	
 	-- show the shopping list?
 	if self.db.profile.showShoppingList then
@@ -136,11 +138,11 @@ function Cauldron:OnAddonLoaded(event, addon)
 		end
 	end
 	
-	self:Debug("OnAddonLoaded exit");
+	self:debug("OnAddonLoaded exit");
 end
 
 function Cauldron:OnEvent(event, ...)
-	self:Debug("OnEvent enter");
+	self:debug("OnEvent enter");
 	
 	if ( event == "UNIT_PORTRAIT_UPDATE" ) then
 		local arg1 = ...;
@@ -149,41 +151,41 @@ function Cauldron:OnEvent(event, ...)
 		end
 	end
 
-	self:Debug("OnEvent exit");
+	self:debug("OnEvent exit");
 end
 
 function Cauldron:OnTradeShow()
-	self:Debug("OnTradeShow enter");
+	self:debug("OnTradeShow enter");
 
 	-- update our known skills	
-	self:Debug("OnTradeShow: update known skills");
+	self:debug("OnTradeShow: update known skills");
 	self:UpdateSkills();
 
 	-- show the UI frame
-	self:Debug("OnTradeShow: show the UI");
+	self:debug("OnTradeShow: show the UI");
 	self:Frame_Show();
 	
-	self:Debug("OnTradeShow exit");
+	self:debug("OnTradeShow exit");
 end
 
 function Cauldron:OnTradeUpdate()
-	self:Debug("OnTradeUpdate enter");
+	self:debug("OnTradeUpdate enter");
 
 --	TODO	
 	
-	self:Debug("OnTradeUpdate exit");
+	self:debug("OnTradeUpdate exit");
 end
 
 function Cauldron:OnTradeClose()
-	self:Debug("OnTradeClose enter");
+	self:debug("OnTradeClose enter");
 	
 	self:Frame_Hide();
 	
-	self:Debug("OnTradeClose exit");
+	self:debug("OnTradeClose exit");
 end
 
 function Cauldron:OnSkillUpdate()
-	self:Debug("OnSkillUpdate enter");
+	self:debug("OnSkillUpdate enter");
 
 	self:UpdateSkills();
 --	self:UpdateSpecializations();
@@ -194,21 +196,21 @@ function Cauldron:OnSkillUpdate()
 --		end
 --	end
 
-	self:Debug("OnSkillUpdate exit");
+	self:debug("OnSkillUpdate exit");
 end
 
 function Cauldron:OnTradeSkillRecast()
-	self:Debug("OnTradeSkillRecast enter");
+	self:debug("OnTradeSkillRecast enter");
 
 	self:UpdateSkills();
 	
 	self:Frame_Update();
 	
-	self:Debug("OnTradeSkillRecast exit");
+	self:debug("OnTradeSkillRecast exit");
 end
 
 function Cauldron:OnBagUpdate()
-	self:Debug("OnBagUpdate enter");
+	self:debug("OnBagUpdate enter");
 	
 	if not CauldronFrame:IsShown() then
 		return;
@@ -228,43 +230,43 @@ function Cauldron:OnBagUpdate()
 	
 	self:Frame_Update();
 	
-	self:Debug("OnBagUpdate exit");
+	self:debug("OnBagUpdate exit");
 end
 
 function Cauldron:OnCraftShow()
-	self:Debug("OnCraftShow enter");
+	self:debug("OnCraftShow enter");
 
 --	TODO	
 	
-	self:Debug("OnCraftShow exit");
+	self:debug("OnCraftShow exit");
 end
 
 function Cauldron:OnCraftClose()
-	self:Debug("OnCraftClose enter");
+	self:debug("OnCraftClose enter");
 
 --	TODO	
 	
-	self:Debug("OnCraftClose exit");
+	self:debug("OnCraftClose exit");
 end
 
 function Cauldron:OnError()
-	self:Debug("OnError enter");
+	self:debug("OnError enter");
 
 --	TODO	
 	
-	self:Debug("OnError exit");
+	self:debug("OnError exit");
 end
 
 function Cauldron:TradeSkillFrame_SetSelection(id)
-	self:Debug("TradeSkillFrame_SetSelection enter");
+	self:debug("TradeSkillFrame_SetSelection enter");
 
 	-- TODO
 
-	self:Debug("TradeSkillFrame_SetSelection exit");
+	self:debug("TradeSkillFrame_SetSelection exit");
 end
 
 function Cauldron:GetSelectedSkill()
-	self:Debug("GetSelectedSkill enter");
+	self:debug("GetSelectedSkill enter");
 
 	local skillName = CURRENT_TRADESKILL;
 	if IsTradeSkillLinked() then
@@ -279,13 +281,13 @@ function Cauldron:GetSelectedSkill()
 		end
 	end
 
-	self:Debug("GetSelectedSkill exit");
+	self:debug("GetSelectedSkill exit");
 	
 	return nil;
 end
 
 function Cauldron:QueueAllTradeSkillItem()
-	self:Debug("QueueAllTradeSkillItem enter");
+	self:debug("QueueAllTradeSkillItem enter");
 	
 	local skillInfo = Cauldron:GetSelectedSkill();
 	
@@ -300,11 +302,11 @@ function Cauldron:QueueAllTradeSkillItem()
 		end
 	end
 
-	self:Debug("QueueAllTradeSkillItem exit");
+	self:debug("QueueAllTradeSkillItem exit");
 end
 
 function Cauldron:QueueTradeSkillItem()
-	self:Debug("QueueTradeSkillItem enter");
+	self:debug("QueueTradeSkillItem enter");
 
 	local skillInfo = Cauldron:GetSelectedSkill();
 	
@@ -316,11 +318,11 @@ function Cauldron:QueueTradeSkillItem()
 		CauldronQueue:AddItem(self.db.realm.userdata[self.vars.playername].queue, skillInfo, amount);
 	end
 
-	self:Debug("QueueTradeSkillItem exit");
+	self:debug("QueueTradeSkillItem exit");
 end
 
 function Cauldron:CreateAllTradeSkillItem()
-	self:Debug("CreateAllTradeSkillItem enter");
+	self:debug("CreateAllTradeSkillItem enter");
 
 	if ( (not PartialPlayTime()) and (not NoPlayTime()) ) then
 		CauldronAmountInputBox:ClearFocus();
@@ -332,11 +334,11 @@ function Cauldron:CreateAllTradeSkillItem()
 		DoTradeSkill(skillInfo.index, skillInfo.available);
 	end
 
-	self:Debug("CreateAllTradeSkillItem exit");
+	self:debug("CreateAllTradeSkillItem exit");
 end
 
 function Cauldron:CreateTradeSkillItem()
-	self:Debug("CreateTradeSkillItem enter");
+	self:debug("CreateTradeSkillItem enter");
 
 	if ( (not PartialPlayTime()) and (not NoPlayTime()) ) then
 		CauldronAmountInputBox:ClearFocus();
@@ -347,11 +349,11 @@ function Cauldron:CreateTradeSkillItem()
 		DoTradeSkill(skillInfo.index, amount);
 	end
 
-	self:Debug("CreateTradeSkillItem exit");
+	self:debug("CreateTradeSkillItem exit");
 end
 
 function Cauldron:ProcessQueue()
-	self:Debug("ProcessQueue enter");
+	self:debug("ProcessQueue enter");
 
 	if IsTradeSkillLinked() then
 		-- TODO: display error/warning
@@ -360,34 +362,34 @@ function Cauldron:ProcessQueue()
 
 	-- find intermediate items that need to be crafted
 	local intQueue = CauldronQueue:GetIntermediates(self.db.realm.userdata[self.vars.playername].queue);
-	self:Debug("ProcessQueue: intQueue="..#intQueue);
+	self:debug("ProcessQueue: intQueue="..#intQueue);
 	
 	local queueInfo = nil;
 	local skillInfo = nil;
 	
 	if #intQueue > 0 then
-		self:Debug("ProcessQueue: processing intermediate queue items");
+		self:debug("ProcessQueue: processing intermediate queue items");
 		
 	 	queueInfo = intQueue[1];
-		self:Debug("ProcessQueue: queueInfo="..queueInfo.name);
+		self:debug("ProcessQueue: queueInfo="..queueInfo.name);
 		skillInfo = Cauldron:GetSkillInfo(queueInfo.tradeskill, queueInfo.name);
-		self:Debug("ProcessQueue: skillInfo="..tostring(skillInfo));
+		self:debug("ProcessQueue: skillInfo="..tostring(skillInfo));
 	else
 		local queue = CauldronQueue:GetItems(self.db.realm.userdata[self.vars.playername].queue);
-		self:Debug("ProcessQueue: queue="..#queue);
+		self:debug("ProcessQueue: queue="..#queue);
 		
 		if #queue > 0 then
-			self:Debug("ProcessQueue: processing main queue items");
+			self:debug("ProcessQueue: processing main queue items");
 		
 			queueInfo = queue[1];
-			self:Debug("ProcessQueue: queueInfo="..queueInfo.name);
+			self:debug("ProcessQueue: queueInfo="..queueInfo.name);
 			skillInfo = Cauldron:GetSkillInfo(queueInfo.tradeskill, queueInfo.name);
-			self:Debug("ProcessQueue: skillInfo="..tostring(skillInfo));
+			self:debug("ProcessQueue: skillInfo="..tostring(skillInfo));
 		end
 	end
 	
 	if queueInfo and skillInfo then
-		self:Debug("ProcessQueue: queueInfo="..queueInfo.name);
+		self:debug("ProcessQueue: queueInfo="..queueInfo.name);
 		
 		if queueInfo.tradeskill ~= CURRENT_TRADESKILL then
 			local msg = string.format(L["Crafting %1$s requires the %2$s skill."], queueInfo.name, queueInfo.tradeskill);
@@ -395,7 +397,7 @@ function Cauldron:ProcessQueue()
 			return;
 		end
 		
-		self:Debug("ProcessQueue: process item: "..queueInfo.name);
+		self:debug("ProcessQueue: process item: "..queueInfo.name);
 		Cauldron:ProcessItem(skillInfo, queueInfo.amount);
 	else
 		if not queueInfo then
@@ -406,12 +408,12 @@ function Cauldron:ProcessQueue()
 		end
 	end
 
-	self:Debug("ProcessQueue exit");
+	self:debug("ProcessQueue exit");
 end
 
 
 function Cauldron:ProcessItem(skillInfo, amount)
-	self:Debug("ProcessItem enter");
+	self:debug("ProcessItem enter");
 	
 	if (not skillInfo) or (amount < 1) then
 		self:Print("Missing skill info!");
@@ -432,7 +434,7 @@ function Cauldron:ProcessItem(skillInfo, amount)
 		-- TODO: notify player?
 	end
 	
-	self:Debug("ProcessItem exit");
+	self:debug("ProcessItem exit");
 end
 
 function Cauldron:RemoveQueueItem(name)
@@ -452,7 +454,7 @@ function Cauldron:DecreaseItemCount(name)
 end
 
 function Cauldron:GetQueue(player)
-	self:Debug("GetQueue enter");
+	self:debug("GetQueue enter");
 
 	if not player then
 		player = self.vars.playername;
@@ -464,7 +466,7 @@ function Cauldron:GetQueue(player)
 		self.db.realm.userdata[player].queue = queue;
 	end
 	
-	self:Debug("GetQueue enter");
+	self:debug("GetQueue enter");
 
 	return queue;
 end
@@ -486,22 +488,12 @@ function Cauldron:LocaleString(str)
 	return L[str];
 end
 
-function Cauldron:SaveShoppingListFramePosition()
-	if CauldronShoppingListFrame then
-		local s = CauldronShoppingListFrame:GetEffectiveScale();
-		self.db.profile.ShoppingListPositionX = CauldronShoppingListFrame:GetLeft();
-		self.db.profile.ShoppingListPositionY = CauldronShoppingListFrame:GetTop();
-		self.db.profile.ShoppingListWidth = CauldronShoppingListFrame:GetWidth();
-		self.db.profile.ShoppingListHeight = CauldronShoppingListFrame:GetHeight();
-	end
-end
-
 ----------------------------------------------------------------
 --  Tooltip Functions
 ----------------------------------------------------------------
 
 function Cauldron:HookTooltips()
-	self:Debug("HookTooltips enter");
+	self:debug("HookTooltips enter");
 
 --	self:SecureHook(GameTooltip, "SetBagItem");
 --	self:SecureHook(GameTooltip, "SetInventoryItem");
@@ -514,7 +506,7 @@ function Cauldron:HookTooltips()
 --	self:SecureHook(GameTooltip, "SetGuildBankItem");
 --	self:SecureHook("SetItemRef");
 
-	self:Debug("HookTooltips exit");
+	self:debug("HookTooltips exit");
 end
 
 ----------------------------------------------------------------------

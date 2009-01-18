@@ -1,4 +1,4 @@
--- $Revision: 1.1 $
+-- $Revision: 1.2 $
 -- Cauldron tradeskill functions
 
 --[[
@@ -26,6 +26,7 @@
 		['defaultCategory'] = "<category>",
 		['categories'] = {}, -- TODO
 		['benefit'] = {}, -- TODO
+		['keywords'] = "",
 	};
 	
 	The following table describes a skill's reagent:
@@ -42,11 +43,11 @@
 --]]
 
 function Cauldron:UpdateSkills()
-	self:Debug("UpdateSkills enter");
+	self:debug("UpdateSkills enter");
 	
 	local skillName = GetTradeSkillLine();
 	local baseSkillName = skillName;
-	self:Debug("UpdateSkills: skillName="..skillName);
+	self:debug("UpdateSkills: skillName="..skillName);
 	
 	if skillName == "UNKNOWN" then
 		return; 
@@ -100,12 +101,14 @@ function Cauldron:UpdateSkills()
 			
 	for i=1,GetNumTradeSkills() do
 		local name, difficulty, avail, expanded = GetTradeSkillInfo(i);
---		self:Debug("UpdateSkills: name="..name.."; difficulty="..difficulty.."; avail="..avail);
+--		self:debug("UpdateSkills: name="..name.."; difficulty="..difficulty.."; avail="..avail);
 		
 		if name and difficulty ~= "header" then
 			local link = GetTradeSkillItemLink(i);
 			local minMade, maxMade = GetTradeSkillNumMade(i);
 			local _, _, _, _, _, _, _, _, slot, _ = GetItemInfo(link);
+			
+			local keywords = name;
 
 			-- fill in the db entry
 			skillDB.recipes[name] = {
@@ -165,7 +168,12 @@ function Cauldron:UpdateSkills()
 					['index'] = j,
 					['skillIndex'] = i,
 				});
+				
+				keywords = keywords..","..rname;
 			end
+
+			-- fill in the db entry
+			skillDB.recipes[name].keywords = keywords;
 	    else
 	    	-- save the header name
 	    	category = name;
@@ -177,25 +185,27 @@ function Cauldron:UpdateSkills()
 		end
 	end
 
-	self:Debug("UpdateSkills exit");
+	self:debug("UpdateSkills exit");
 end
 
 function Cauldron:GetDefaultCategories(player, skillName)
-	self:Debug("GetDefaultCategories enter");
+	self:debug("GetDefaultCategories enter");
 
 	local categories = {};
 	
-	for name, info in pairs(self.db.realm.userdata[self.vars.playername].skills[skillName].recipes) do
-		categories[info.defaultCategory] = true;
+	if self.db then
+		for name, info in pairs(self.db.realm.userdata[player].skills[skillName].recipes) do
+			categories[info.defaultCategory] = true;
+		end
 	end
 
-	self:Debug("GetDefaultCategories exit");
+	self:debug("GetDefaultCategories exit");
 	
 	return categories;
 end
 
 function Cauldron:GetCategories(skillList)
-	self:Debug("GetCategories enter");
+	self:debug("GetCategories enter");
 
 	local categories = {};
 	
@@ -203,29 +213,31 @@ function Cauldron:GetCategories(skillList)
 		categories[info.defaultCategory] = true;
 	end
 
-	self:Debug("GetCategories exit");
+	self:debug("GetCategories exit");
 	
 	return categories;
 end
 
 function Cauldron:GetSlots(player, skillName)
-	self:Debug("GetSlots enter");
+	self:debug("GetSlots enter");
 	
 	local slots = {};
-
-	for name, info in pairs(self.db.realm.userdata[self.vars.playername].skills[skillName].recipes) do
-		if info.slot ~= "" then
-			slots[info.slot] = true;
+	
+	if self.db then
+		for name, info in pairs(self.db.realm.userdata[player].skills[skillName].recipes) do
+			if info.slot ~= "" then
+				slots[info.slot] = true;
+			end
 		end
 	end
 
-	self:Debug("GetSlots exit");
+	self:debug("GetSlots exit");
 	
 	return slots;
 end
 
 function Cauldron:GetSkillList(playername, skillName)
-	self:Debug("GetSkillList enter");
+	self:debug("GetSkillList enter");
 	
 	if (not playername) or (not skillName) then
 		-- TODO: display error
@@ -260,8 +272,8 @@ function Cauldron:GetSkillList(playername, skillName)
 --				SetTradeSkillItemLevelFilter(minLevel, maxLevel);
 			else
 				-- match name or reagents
-				if not Cauldron:SkillContainsText(recipe, search) then
-					self:Debug("skipping recipe: "..name.." (difficulty: "..recipe.difficulty..")");
+				if not string.find(recipe.keywords, search) then
+					self:debug("skipping recipe: "..name.." (keywords: "..recipe.keywords..")");
 					add = false;
 				end
 			end
@@ -270,21 +282,21 @@ function Cauldron:GetSkillList(playername, skillName)
 	
 		-- check difficulty filter
 		if not self.db.realm.userdata[playername].skills[skillName].window.filter[recipe.difficulty] then
-			self:Debug("skipping recipe: "..name.." (difficulty: "..recipe.difficulty..")");
+			self:debug("skipping recipe: "..name.." (difficulty: "..recipe.difficulty..")");
 			add = false;
 		end
 		
 		-- check categories
 		local catInfo = self.db.realm.userdata[playername].skills[skillName].window.categories[recipe.defaultCategory];
 		if catInfo and (not catInfo.shown) then
-			self:Debug("skipping recipe: "..name.." (category: "..recipe.defaultCategory..")");
+			self:debug("skipping recipe: "..name.." (category: "..recipe.defaultCategory..")");
 			add = false;
 		end
 		
 		-- check slot
 		local slotInfo = self.db.realm.userdata[playername].skills[skillName].window.slots[recipe.slot];
 		if slotInfo then -- more
-			self:Debug("skipping recipe: "..name.." (slot: "..recipe.slot..")");
+			self:debug("skipping recipe: "..name.." (slot: "..recipe.slot..")");
 			add = false;
 		end
 		
@@ -334,13 +346,13 @@ function Cauldron:GetSkillList(playername, skillName)
 			return 0;
 		end);
 
-	self:Debug("GetSkillList exit");
+	self:debug("GetSkillList exit");
 	
 	return skills;
 end
 
 function Cauldron:GetSkillInfo(tradeskill, skill)
-	self:Debug("GetSkillInfo enter");
+	self:debug("GetSkillInfo enter");
 	
 	-- sanity checks
 	if (not tradeskill) or (not skill) then
@@ -364,7 +376,7 @@ function Cauldron:GetSkillInfo(tradeskill, skill)
 		end
 	end
 	
-	self:Debug("GetSkillInfo exit");
+	self:debug("GetSkillInfo exit");
 	
 	return skillInfo;
 end

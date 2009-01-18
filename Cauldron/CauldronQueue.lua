@@ -1,4 +1,4 @@
--- $Revision: 1.1 $
+-- $Revision: 1.2 $
 -- Cauldron queue management functions
 
 CauldronQueue = {};
@@ -327,7 +327,7 @@ function CauldronQueue:AdjustItemCount(queue, name, delta)
 end
 
 function CauldronQueue:RemoveItem(queue, itemName)
-	Cauldron:Debug("RemoveItem enter");
+	Cauldron:debug("RemoveItem enter");
 	
 	-- sanity checks
 	if (not queue) and (not itemName) then
@@ -341,11 +341,11 @@ function CauldronQueue:RemoveItem(queue, itemName)
 		CauldronQueue:CalculateAllRequiredItems(queue);
 	end
 	
-	Cauldron:Debug("RemoveItem exit");
+	Cauldron:debug("RemoveItem exit");
 end
 
 function CauldronQueue:IncreasePriority(queue, itemName, top)
-	Cauldron:Debug("IncreasePriority enter");
+	Cauldron:debug("IncreasePriority enter");
 	
 	-- sanity checks
 	if (not queue) and (not itemName) then
@@ -371,11 +371,11 @@ function CauldronQueue:IncreasePriority(queue, itemName, top)
 		item.priority = priority;
 	end
 	
-	Cauldron:Debug("IncreasePriority exit");
+	Cauldron:debug("IncreasePriority exit");
 end
 
 function CauldronQueue:DecreasePriority(queue, itemName, bottom)
-	Cauldron:Debug("DecreasePriority enter");
+	Cauldron:debug("DecreasePriority enter");
 	
 	-- sanity checks
 	if (not queue) and (not itemName) then
@@ -401,11 +401,11 @@ function CauldronQueue:DecreasePriority(queue, itemName, bottom)
 		item.priority = priority;
 	end
 	
-	Cauldron:Debug("DecreasePriority exit");
+	Cauldron:debug("DecreasePriority exit");
 end
 
 function CauldronQueue:ClearQueue(queue)
-	Cauldron:Debug("ClearQueue enter");
+	Cauldron:debug("ClearQueue enter");
 
 	-- sanity checks
 	if not queue then
@@ -415,27 +415,27 @@ function CauldronQueue:ClearQueue(queue)
 
 	--[[	
 	if tradeskill then
-		Cauldron:Debug("ClearQueue: clearing tradeskill: "..tradeskill);
+		Cauldron:debug("ClearQueue: clearing tradeskill: "..tradeskill);
 
 		-- set aside the current main queue
-		Cauldron:Debug("ClearQueue: set aside main table");
+		Cauldron:debug("ClearQueue: set aside main table");
 		local main = queue.main;
 		
 		-- clear out the tables
-		Cauldron:Debug("ClearQueue: clear out tables");
+		Cauldron:debug("ClearQueue: clear out tables");
 		queue.main = {};
 		
 		-- iterate over the items and re-add the ones not for the specified tradeskill
-		Cauldron:Debug("ClearQueue: iterate over items");
+		Cauldron:debug("ClearQueue: iterate over items");
 		for i, item in ipairs(main) do
-			Cauldron:Debug("ClearQueue: item: "..i);
+			Cauldron:debug("ClearQueue: item: "..i);
 			if item.tradeskill ~= tradeskill then
 				-- get the skill for the item
-				Cauldron:Debug("ClearQueue: item.tradeskill: "..item.tradeskill);
+				Cauldron:debug("ClearQueue: item.tradeskill: "..item.tradeskill);
 				local skillInfo = Cauldron:GetSkillInfo(item.tradeskill, item.name);
 				
 				-- recalculate
-				Cauldron:Debug("ClearQueue: recalculate");
+				Cauldron:debug("ClearQueue: recalculate");
 				CauldronQueue:AddItem(queue, skillInfo, item.amount, true);
 			end
 		end
@@ -448,7 +448,7 @@ function CauldronQueue:ClearQueue(queue)
 	queue.intermediate = {};
 	queue.reagents = {};
 	
-	Cauldron:Debug("ClearQueue exit");
+	Cauldron:debug("ClearQueue exit");
 end
 
 

@@ -1,4 +1,4 @@
--- $Revision: 1.1 $
+-- $Revision: 1.2 $
 -- Cauldron user interface logic
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Cauldron")
@@ -6,19 +6,19 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Cauldron")
 -- CauldronUI = LibStub("AceAddon-3.0"):NewAddon("CauldronUI", "AceEvent-3.0", "AceConsole-3.0", "LibDebugLog-1.0")
 
 function Cauldron:Frame_Show()
- 	self:Debug("Frame_Show enter");
+ 	self:debug("Frame_Show enter");
 
- 	self:Debug("Frame_Show: close dropdown menus");
+ 	self:debug("Frame_Show: close dropdown menus");
  	CloseDropDownMenus();
 
 --	self:UpdateFramePosition();
 --	self:UpdateFrameStrata();
 
- 	self:Debug("Frame_Show: show our frame");
+ 	self:debug("Frame_Show: show our frame");
  	ShowUIPanel(CauldronFrame);
 
 	if TradeSkillFrame then
-		self:Debug("Frame_Show: hide the original tradeskill frame");
+		self:debug("Frame_Show: hide the original tradeskill frame");
 
 		-- hide the original tradeskill frame
 		TradeSkillFrame:SetAlpha(0);
@@ -29,43 +29,43 @@ function Cauldron:Frame_Show()
 
  	self:RegisterMessage("Cauldron_Update", "OnCauldronUpdate");
 
- 	self:Debug("Frame_Show: call Frame_Update()");
+ 	self:debug("Frame_Show: call Frame_Update()");
 	self:Frame_Update();
 
- 	self:Debug("Frame_Show exit");
+ 	self:debug("Frame_Show exit");
 end
 
 function Cauldron:Frame_Hide()
- 	self:Debug("Frame_Hide enter");
+ 	self:debug("Frame_Hide enter");
 
  	self:UnregisterEvent("Cauldron_Update")
  	HideUIPanel(CauldronFrame);
 
- 	self:Debug("Frame_Hide exit");
+ 	self:debug("Frame_Hide exit");
 end
 
 function Cauldron:Frame_Toggle()
- 	self:Debug("Frame_Toggle enter");
+ 	self:debug("Frame_Toggle enter");
 
  	if CauldronFrame:IsVisible() then
-		self:Debug("Frame_Toggle: call Frame_Hide()");
+		self:debug("Frame_Toggle: call Frame_Hide()");
  		Cauldron:Frame_Hide();
  	else
-		self:Debug("Frame_Toggle: call Frame_Show()");
+		self:debug("Frame_Toggle: call Frame_Show()");
  		Cauldron:Frame_Show();
  	end
 
- 	self:Debug("Frame_Toggle exit");
+ 	self:debug("Frame_Toggle exit");
 end
 
 function Cauldron:Frame_Update()
- 	self:Debug("Frame_Update enter");
+ 	self:debug("Frame_Update enter");
 
 	local numTradeSkills = GetNumTradeSkills();
-	self:Debug("Frame_Update numTradeSkills: ",numTradeSkills);
+	self:debug("Frame_Update numTradeSkills: ",numTradeSkills);
 --	local skillOffset = FauxScrollFrame_GetOffset(TradeSkillListScrollFrame);
 	local name, rank, maxRank = GetTradeSkillLine();
-	self:Debug("Frame_Update name: ",name,"; rank: ",rank,"; maxRank: ",maxRank);
+	self:debug("Frame_Update name: ",name,"; rank: ",rank,"; maxRank: ",maxRank);
 	
 	if name == "UNKNOWN" then
 		return;
@@ -74,7 +74,7 @@ function Cauldron:Frame_Update()
 	Cauldron:UpdateSkills();
 	
 	if CURRENT_TRADESKILL ~= name then
-		self:Debug("Frame_Update: current skill changed");
+		self:debug("Frame_Update: current skill changed");
 
 		StopTradeSkillRepeat();
 
@@ -90,34 +90,34 @@ function Cauldron:Frame_Update()
 	end
 	
 	-- display skill name, level/progress
-	self:Debug("Frame_Update: display skill level/progress");
+	self:debug("Frame_Update: display skill level/progress");
 	self:UpdateSkillInfo(name, rank, maxRank);
 
 	-- update search text box
-	self:Debug("Frame_Update: display search text");
+	self:debug("Frame_Update: display search text");
 	self:UpdateSearchText(name);
 	
 	-- TODO: update dropdowns
-	self:Debug("Frame_Update: update dropdowns");
+	self:debug("Frame_Update: update dropdowns");
 	self:UpdateFilterDropDowns();
 	
 	-- display list of matching skills
-	self:Debug("Frame_Update: display list of skills");
+	self:debug("Frame_Update: display list of skills");
 	self:UpdateSkillList();
 	
 	-- display queue
-	self:Debug("Frame_Update: display queue");
+	self:debug("Frame_Update: display queue");
 	self:UpdateQueue();
 	
 	-- update buttons
-	self:Debug("Frame_Update: update buttons");
+	self:debug("Frame_Update: update buttons");
 	self:UpdateButtons();
 
- 	self:Debug("Frame_Update exit");
+ 	self:debug("Frame_Update exit");
 end
 
 function Cauldron:UpdateSkillInfo(skillName, rank, maxRank)
-	self:Debug("UpdateSkillInfo enter");
+	self:debug("UpdateSkillInfo enter");
 
 	CauldronRankFrameSkillName:SetText(skillName);
 
@@ -127,11 +127,11 @@ function Cauldron:UpdateSkillInfo(skillName, rank, maxRank)
 	CauldronRankFrame:SetValue(rank);
 	CauldronRankFrameSkillRank:SetText(rank.."/"..maxRank);
 
-	self:Debug("UpdateSkillInfo exit");
+	self:debug("UpdateSkillInfo exit");
 end
 
 function Cauldron:UpdateSearchText(skillName)
-	self:Debug("UpdateSearchText enter");
+	self:debug("UpdateSearchText enter");
 
 	local searchText = self.db.realm.userdata[self.vars.playername].skills[skillName].window.search;
 	if searchText == "" then
@@ -139,17 +139,17 @@ function Cauldron:UpdateSearchText(skillName)
 	end
 	CauldronFiltersSearchEditBox:SetText(searchText);
 	
-	self:Debug("UpdateSearchText exit");
+	self:debug("UpdateSearchText exit");
 end
 
 function Cauldron:UpdateFilterDropDowns()
-	self:Debug("UpdateFilterDropDowns enter");
+	self:debug("UpdateFilterDropDowns enter");
 
-	self:Debug("UpdateFilterDropDowns exit");
+	self:debug("UpdateFilterDropDowns exit");
 end
 
 function Cauldron:UpdateSkillList()
-	self:Debug("UpdateSkillList enter");
+	self:debug("UpdateSkillList enter");
 	
 	local skillName = CURRENT_TRADESKILL;
 	if IsTradeSkillLinked() then
@@ -157,7 +157,7 @@ function Cauldron:UpdateSkillList()
 	end
 	
 	local skillList = Cauldron:GetSkillList(self.vars.playername, skillName);
-	self:Debug("UpdateSkillList: skillList="..#skillList);
+	self:debug("UpdateSkillList: skillList="..#skillList);
 	
 	local height = 0;
 	
@@ -252,7 +252,7 @@ function Cauldron:UpdateSkillList()
 		frame = _G["CauldronSkillItem"..i.."DiscloseButton"];
 		frame.skillInfo = skillInfo;
 		local reagentsExpanded = self.db.realm.userdata[self.vars.playername].skills[skillName].window.skills[skillName][skillInfo.name].expanded;
-		self:Debug("UpdateSkillList: reagentsExpanded="..tostring(reagentsExpanded));
+		self:debug("UpdateSkillList: reagentsExpanded="..tostring(reagentsExpanded));
 		if reagentsExpanded then
 			frame:SetNormalTexture("Interface\\Buttons\\UI-MinusButton-Up");
 			
@@ -262,13 +262,13 @@ function Cauldron:UpdateSkillList()
 			local spellFocus = BuildColoredListString(GetTradeSkillTools(skillInfo.index));
 			local toolsFrame = _G["CauldronSkillItem"..i.."ReagentsToolsInfo"];
 			if spellFocus then
-				self:Debug("UpdateSkillList: skill has a spell focus");
+				self:debug("UpdateSkillList: skill has a spell focus");
 
 				toolsFrame:Show();
 				toolsFrame:SetText(L["Requires"]..": "..spellFocus);
 				toolsFrame:SetHeight(15);
 			else
-				self:Debug("UpdateSkillList: skill doesn't have a spell focus");
+				self:debug("UpdateSkillList: skill doesn't have a spell focus");
 
 				toolsFrame:Hide();
 				toolsFrame:SetText("");
@@ -280,31 +280,31 @@ function Cauldron:UpdateSkillList()
 			local reagentCount = #skillInfo.reagents;
 
 			for j=1,8 do
-				self:Debug("UpdateSkillList: j="..j);
+				self:debug("UpdateSkillList: j="..j);
 				
 				local reagentFrame = _G["CauldronSkillItem"..i.."ReagentsItemDetail"..j];
-				self:Debug("UpdateSkillList: reagentFrame="..tostring(reagentFrame));
+				self:debug("UpdateSkillList: reagentFrame="..tostring(reagentFrame));
 				local reagentInfo = skillInfo.reagents[j];
-				self:Debug("UpdateSkillList: reagentInfo="..tostring(reagentInfo));
+				self:debug("UpdateSkillList: reagentInfo="..tostring(reagentInfo));
 
 				reagentFrame.skillIndex = skillInfo.index;
 				
 				if j > reagentCount then
-					self:Debug("UpdateSkillList: hide the reagent frame");
+					self:debug("UpdateSkillList: hide the reagent frame");
 					reagentFrame:Hide();
 				else
-					self:Debug("UpdateSkillList: show the reagent info");
+					self:debug("UpdateSkillList: show the reagent info");
 					
 					local reagentNameFrame = _G["CauldronSkillItem"..i.."ReagentsItemDetail"..j.."Name"];
-					self:Debug("UpdateSkillList: reagentNameFrame="..tostring(reagentNameFrame));
+					self:debug("UpdateSkillList: reagentNameFrame="..tostring(reagentNameFrame));
 					local reagentCountFrame = _G["CauldronSkillItem"..i.."ReagentsItemDetail"..j.."Count"];
-					self:Debug("UpdateSkillList: reagentCountFrame="..tostring(reagentCountFrame));
+					self:debug("UpdateSkillList: reagentCountFrame="..tostring(reagentCountFrame));
 
-					self:Debug("UpdateSkillList: show the reagent frame");
+					self:debug("UpdateSkillList: show the reagent frame");
 					reagentFrame:Show();
-					self:Debug("UpdateSkillList: set the item button texture");
+					self:debug("UpdateSkillList: set the item button texture");
 					SetItemButtonTexture(reagentFrame, reagentInfo.icon);
-					self:Debug("UpdateSkillList: set the reagent name");
+					self:debug("UpdateSkillList: set the reagent name");
 					reagentNameFrame:SetText(reagentInfo.name);
 					
 					local playerReagentCount = reagentInfo.toonHas;
@@ -327,7 +327,7 @@ function Cauldron:UpdateSkillList()
 			_G["CauldronSkillItem"..i.."Reagents"]:SetHeight(toolsFrame:GetHeight() + (reagentRows * _G["CauldronSkillItem"..i.."ReagentsItemDetail1"]:GetHeight()));
 			_G["CauldronSkillItem"..i]:SetHeight(_G["CauldronSkillItem"..i.."SkillIcon"]:GetHeight() + _G["CauldronSkillItem"..i.."Reagents"]:GetHeight());
 		else
-			self:Debug("UpdateSkillList: reagents info not expanded");
+			self:debug("UpdateSkillList: reagents info not expanded");
 
 			_G["CauldronSkillItem"..i.."Reagents"]:Hide();
 
@@ -338,21 +338,21 @@ function Cauldron:UpdateSkillList()
 		-- place the frame in the scroll view
 		if i > 1 then
 			-- anchor to the frame above
-			self:Debug("UpdateSkillList: anchor frame to top left of frame above");
+			self:debug("UpdateSkillList: anchor frame to top left of frame above");
 			skillFrame:SetPoint("TOPLEFT", _G["CauldronSkillItem"..(i-1)], "BOTTOMLEFT", 0, -2);
 		else
 			-- anchor to the parent
-			self:Debug("UpdateSkillList: anchor frame to parent");
+			self:debug("UpdateSkillList: anchor frame to parent");
 			skillFrame:SetPoint("TOPLEFT", 0, 0);
 		end
 		
 		-- adjust the scroll child size
 		height = height + skillFrame:GetHeight();
-		self:Debug("UpdateSkillList: height="..height);
+		self:debug("UpdateSkillList: height="..height);
 		CauldronSkillListFrameScrollFrameScrollChild:SetHeight(height);
 
 		-- show the frame
-		self:Debug("UpdateSkillList: show the frame");
+		self:debug("UpdateSkillList: show the frame");
 		skillFrame:Show();
 	end
 	
@@ -370,11 +370,11 @@ function Cauldron:UpdateSkillList()
 		j = j + 1;
 	end
 	
-	self:Debug("UpdateSkillList exit");
+	self:debug("UpdateSkillList exit");
 end
 
 function Cauldron:UpdateButtons()
-	self:Debug("UpdateButtons enter");
+	self:debug("UpdateButtons enter");
 	
 	local skillInfo = Cauldron:GetSelectedSkill();
 	
@@ -401,11 +401,11 @@ function Cauldron:UpdateButtons()
 		CauldronClearQueueButton:Disable();
 	end
 	
-	self:Debug("UpdateButtons exit");
+	self:debug("UpdateButtons exit");
 end
 
 function Cauldron:UpdateQueue()
-	self:Debug("UpdateQueue enter");
+	self:debug("UpdateQueue enter");
 	
 	if not CauldronFrame:IsShown() then
 		return;
@@ -420,7 +420,7 @@ function Cauldron:UpdateQueue()
 	end
 
 	if #itemQueue == 0 then
-		self:Debug("UpdateQueue: display empty queue");
+		self:debug("UpdateQueue: display empty queue");
 
 		-- queue is empty, display the empty message
 		CauldronQueueFrameQueueEmpty:Show();
@@ -435,7 +435,7 @@ function Cauldron:UpdateQueue()
 		return;
 	end
 
-	self:Debug("UpdateQueue: display queue");
+	self:debug("UpdateQueue: display queue");
 
 	-- queue has items, show them
 	CauldronQueueFrameQueueEmpty:Hide();
@@ -517,19 +517,19 @@ function Cauldron:UpdateQueue()
 		-- place the frame in the scroll view
 		if i > 1 then
 			-- anchor to the frame above
-			self:Debug("UpdateQueue: anchor frame to top left of frame above");
+			self:debug("UpdateQueue: anchor frame to top left of frame above");
 			queueItemFrame:SetPoint("TOPLEFT", _G["CauldronQueueItem"..(i-1)], "BOTTOMLEFT", 0, -2);
 		else
 			-- anchor to the parent
-			self:Debug("UpdateQueue: anchor frame to parent");
+			self:debug("UpdateQueue: anchor frame to parent");
 			queueItemFrame:SetPoint("TOPLEFT", CauldronQueueFrameScrollFrameQueueSectionsMainItems, "TOPLEFT", 0, 0);
 		end
 		
 		height = height + queueItemFrame:GetHeight() + 2;
-		self:Debug("UpdateQueue: height="..height);
+		self:debug("UpdateQueue: height="..height);
 
 		-- show the frame
-		self:Debug("UpdateQueue: show the frame");
+		self:debug("UpdateQueue: show the frame");
 		queueItemFrame:Show();
 	end
 
@@ -650,21 +650,21 @@ function Cauldron:UpdateQueue()
 			-- place the frame in the scroll view
 			if i > 1 then
 				-- anchor to the frame above
-				self:Debug("UpdateQueue: anchor frame to top left of frame above");
+				self:debug("UpdateQueue: anchor frame to top left of frame above");
 				queueItemFrame:SetPoint("TOPLEFT", _G["CauldronQueueIntItem"..(i-1)], "BOTTOMLEFT", 0, -2);
 			else
 				-- anchor to the parent
-				self:Debug("UpdateQueue: anchor frame to parent");
+				self:debug("UpdateQueue: anchor frame to parent");
 				queueItemFrame:SetPoint("TOPLEFT", CauldronQueueFrameScrollFrameQueueSectionsSecondaryItems, "TOPLEFT", 0, 0);
 			end
 			
 			-- adjust the scroll child size
 			intHeight = intHeight + queueItemFrame:GetHeight() + 2;
-			self:Debug("UpdateQueue: height="..height);
+			self:debug("UpdateQueue: height="..height);
 			CauldronQueueFrameScrollFrameQueueSectionsSecondaryItems:SetHeight(intHeight);
 	
 			-- show the frame
-			self:Debug("UpdateQueue: show the frame");
+			self:debug("UpdateQueue: show the frame");
 			queueItemFrame:Show();
 		end
 	end
@@ -775,21 +775,21 @@ function Cauldron:UpdateQueue()
 		-- place the frame in the scroll view
 		if i > 1 then
 			-- anchor to the frame above
-			self:Debug("UpdateQueue: anchor frame to top left of frame above");
+			self:debug("UpdateQueue: anchor frame to top left of frame above");
 			queueItemFrame:SetPoint("TOPLEFT", _G["CauldronQueueReagentItem"..(i-1)], "BOTTOMLEFT", 0, -2);
 		else
 			-- anchor to the parent
-			self:Debug("UpdateQueue: anchor frame to parent");
+			self:debug("UpdateQueue: anchor frame to parent");
 			queueItemFrame:SetPoint("TOPLEFT", CauldronQueueFrameScrollFrameQueueSectionsReagents, "TOPLEFT", 0, 0);
 		end
 		
 		-- adjust the scroll child size
 		reagentHeight = reagentHeight + queueItemFrame:GetHeight() + 2;
-		self:Debug("UpdateQueue: height="..height);
+		self:debug("UpdateQueue: height="..height);
 		CauldronQueueFrameScrollFrameQueueSectionsReagents:SetHeight(reagentHeight);
 
 		-- show the frame
-		self:Debug("UpdateQueue: show the frame");
+		self:debug("UpdateQueue: show the frame");
 		queueItemFrame:Show();
 	end
 
@@ -817,19 +817,19 @@ function Cauldron:UpdateQueue()
 	CauldronQueueFrameScrollFrameQueueSections:SetHeight(h);
 	CauldronQueueFrameScrollFrame:UpdateScrollChildRect();
 
-	self:Debug("UpdateQueue exit");
+	self:debug("UpdateQueue exit");
 end
 
 function Cauldron:SaveFramePosition()
- 	self:Debug("SaveFramePosition enter");
+ 	self:debug("SaveFramePosition enter");
 
 -- TODO
 
- 	self:Debug("SaveFramePosition exit");
+ 	self:debug("SaveFramePosition exit");
 end
 
 function Cauldron:OnCauldronUpdate()
-	self:Debug("OnCauldronUpdate enter");
+	self:debug("OnCauldronUpdate enter");
 	
 --	self:Search();
  	local selectionIndex
@@ -839,39 +839,67 @@ function Cauldron:OnCauldronUpdate()
  		selectionIndex = self.vars.selectionIndex;
  	end
 
-	self:Debug("OnCauldronUpdate exit"); 
+	self:debug("OnCauldronUpdate exit"); 
 end
 
 function Cauldron:FilterDropDown_OnLoad(dropdown)
-	self:Debug("FilterDropDown_OnLoad enter");
-	
+	self:debug("FilterDropDown_OnLoad enter");
+
+--[[	
+	if CURRENT_TRADESKILL == "" or CURRENT_TRADESKILL == "UNKNOWN" then
+		return;
+	end
+--]]
+
 	UIDropDownMenu_Initialize(dropdown, Cauldron.FilterDropDown_Initialize);
 	UIDropDownMenu_SetText(CauldronFiltersFilterDropDown, L["Filters"]);
 
-	self:Debug("FilterDropDown_OnLoad exit");
+	self:debug("FilterDropDown_OnLoad exit");
 end
 
 function Cauldron:InvSlotDropDown_OnLoad(dropdown)
-	self:Debug("InvSlotDropDown_OnLoad enter");
+	self:debug("InvSlotDropDown_OnLoad enter");
 	
+--[[	
+	if CURRENT_TRADESKILL == "" or CURRENT_TRADESKILL == "UNKNOWN" then
+		return;
+	end
+--]]
+
 	UIDropDownMenu_Initialize(dropdown, Cauldron.InvSlotDropDown_Initialize);
 	UIDropDownMenu_SetText(CauldronFiltersInvSlotDropDown, L["Slots"]);
 
-	self:Debug("InvSlotDropDown_OnLoad exit");
+	self:debug("InvSlotDropDown_OnLoad exit");
 end
 
 function Cauldron:CategoryDropDown_OnLoad(dropdown)
-	self:Debug("CategoryDropDown_OnLoad enter");
+	self:debug("CategoryDropDown_OnLoad enter");
 	
+--[[	
+	if CURRENT_TRADESKILL == "" or CURRENT_TRADESKILL == "UNKNOWN" then
+		return;
+	end
+--]]
+
 	UIDropDownMenu_Initialize(dropdown, Cauldron.CategoryDropDown_Initialize);
 	UIDropDownMenu_SetText(CauldronFiltersCategoryDropDown, L["Categories"]);
 
-	self:Debug("CategoryDropDown_OnLoad exit");
+	self:debug("CategoryDropDown_OnLoad exit");
 end
 
 function Cauldron:FilterDropDown_Initialize(level)
-	Cauldron:Debug("FilterDropDown_Initialize enter");
+	Cauldron:debug("FilterDropDown_Initialize enter");
 	
+--[[
+	if CURRENT_TRADESKILL == "" or CURRENT_TRADESKILL == "UNKNOWN" then
+		return;
+	end
+--]]
+
+	if not Cauldron.db then
+		return;
+	end
+
 	UIDropDownMenu_SetText(CauldronFiltersFilterDropDown, L["Filters"]);
 
 	-- sorting
@@ -1053,11 +1081,11 @@ function Cauldron:FilterDropDown_Initialize(level)
 	};
 	UIDropDownMenu_AddButton(haveAnyReagents);
 	
-	Cauldron:Debug("FilterDropDown_Initialize exit");
+	Cauldron:debug("FilterDropDown_Initialize exit");
 end
 
 function Cauldron:FilterDropDown_SetSort(info)
-	self:Debug("FilterDropDown_SetSort enter");
+	self:debug("FilterDropDown_SetSort enter");
 	
 	local sort = info.arg1;
 	
@@ -1078,11 +1106,11 @@ function Cauldron:FilterDropDown_SetSort(info)
 	-- update the UI
 	Cauldron:UpdateSkillList();
 
-	self:Debug("FilterDropDown_SetSort exit");
+	self:debug("FilterDropDown_SetSort exit");
 end
 
 function Cauldron:ReagentsFilterNormalCheck()
-	self:Debug("ReagentsFilterNormalCheck enter");
+	self:debug("ReagentsFilterNormalCheck enter");
 	
 	local checked = true;
 	
@@ -1092,13 +1120,13 @@ function Cauldron:ReagentsFilterNormalCheck()
 	   	checked = false;
 	end
 	
-	self:Debug("ReagentsFilterNormalCheck exit");
+	self:debug("ReagentsFilterNormalCheck exit");
 	
 	return checked;
 end
 
 function Cauldron:FilterDropDown_SetReagentFilter(info)
-	self:Debug("FilterDropDown_SetReagentFilter enter");
+	self:debug("FilterDropDown_SetReagentFilter enter");
 	
 	local reagents = info.arg1;
 	
@@ -1123,22 +1151,28 @@ function Cauldron:FilterDropDown_SetReagentFilter(info)
 	-- update the UI
 	Cauldron:UpdateSkillList();
 
-	self:Debug("FilterDropDown_SetReagentFilter exit");
+	self:debug("FilterDropDown_SetReagentFilter exit");
 end
 
 function Cauldron:FilterDropDown_ToggleDifficulty(info)
-	self:Debug("FilterDropDown_ToggleDifficulty enter");
+	self:debug("FilterDropDown_ToggleDifficulty enter");
 	
 	Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[CURRENT_TRADESKILL].window.filter[info.arg1] = not Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[CURRENT_TRADESKILL].window.filter[info.arg1];
 	
 	-- update the UI
 	Cauldron:UpdateSkillList();
 
-	self:Debug("FilterDropDown_ToggleDifficulty exit");
+	self:debug("FilterDropDown_ToggleDifficulty exit");
 end
 
 function Cauldron:InvSlotDropDown_Initialize(level)
-	Cauldron:Debug("InvSlotDropDown_Initialize enter");
+	Cauldron:debug("InvSlotDropDown_Initialize enter");
+
+--[[
+	if CURRENT_TRADESKILL == "" or CURRENT_TRADESKILL == "UNKNOWN" then
+		return;
+	end
+--]]
 
 	local skillName = CURRENT_TRADESKILL;
 	if IsTradeSkillLinked() then
@@ -1161,9 +1195,9 @@ function Cauldron:InvSlotDropDown_Initialize(level)
 	
 	for name, _ in pairs(slots) do
 		local slot = {
-			text = name,
+			text = _G[name],
 			checked = Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots[name],
-			tooltipTitle = name,
+			tooltipTitle = _G[name],
 			func = function(arg1, arg2) Cauldron:InvSlotDropDown_SetSlot(arg1) end,
 			arg1 = name,
 			arg2 = "",
@@ -1171,11 +1205,11 @@ function Cauldron:InvSlotDropDown_Initialize(level)
 		UIDropDownMenu_AddButton(slot);
 	end
 
-	Cauldron:Debug("InvSlotDropDown_Initialize exit");
+	Cauldron:debug("InvSlotDropDown_Initialize exit");
 end
 
 function Cauldron:SlotsFilterAllCheck()
-	self:Debug("SlotsFilterAllCheck enter");
+	self:debug("SlotsFilterAllCheck enter");
 	
 	local skillName = CURRENT_TRADESKILL;
 	if IsTradeSkillLinked() then
@@ -1183,21 +1217,23 @@ function Cauldron:SlotsFilterAllCheck()
 	end
 
 	local checked = true;
-	
-	for name, _ in pairs(Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots) do
-		if Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots[name] then
-			checked = false;
-			break;
+
+	if Cauldron.db then	
+		for name, _ in pairs(Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots) do
+			if Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots[name] then
+				checked = false;
+				break;
+			end
 		end
 	end
 
-	self:Debug("SlotsFilterAllCheck exit");
+	self:debug("SlotsFilterAllCheck exit");
 	
 	return checked;
 end
 
 function Cauldron:InvSlotDropDown_SetSlot(info)
-	self:Debug("InvSlotDropDown_SetSlot enter");
+	self:debug("InvSlotDropDown_SetSlot enter");
 	
 	local skillName = CURRENT_TRADESKILL;
 	if IsTradeSkillLinked() then
@@ -1212,11 +1248,22 @@ function Cauldron:InvSlotDropDown_SetSlot(info)
 		Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots[info.arg1] = not Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[CURRENT_TRADESKILL].window.slots[info.arg1];
 	end
 
-	self:Debug("InvSlotDropDown_SetSlot exit");
+	self:debug("InvSlotDropDown_SetSlot exit");
 end
 
 function Cauldron:CategoryDropDown_Initialize(level)
-	Cauldron:Debug("CategoryDropDown_Initialize enter");
+	Cauldron:debug("CategoryDropDown_Initialize enter");
+
+--[[
+	if CURRENT_TRADESKILL == "" or CURRENT_TRADESKILL == "UNKNOWN" then
+		return;
+	end
+--]]
+
+	local skillName = CURRENT_TRADESKILL;
+	if IsTradeSkillLinked() then
+		skillName = "Linked-"..skillName;
+	end
 
 	UIDropDownMenu_SetText(CauldronFiltersCategoryDropDown, L["Categories"]);
 
@@ -1240,12 +1287,12 @@ function Cauldron:CategoryDropDown_Initialize(level)
 	};
 	UIDropDownMenu_AddButton(none);
 	
-	local categories = Cauldron:GetDefaultCategories(Cauldron.vars.playername, CURRENT_TRADESKILL);
+	local categories = Cauldron:GetDefaultCategories(Cauldron.vars.playername, skillName);
 	
 	for name, _ in pairs(categories) do
 		local category = {
 			text = name,
-			checked = Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[CURRENT_TRADESKILL].window.categories[name].shown,
+			checked = Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.categories[name].shown,
 			tooltipTitle = name,
 			func = function(arg1, arg2) Cauldron:CategoryDropDown_SetCategory(arg1) end,
 			arg1 = name,
@@ -1254,12 +1301,12 @@ function Cauldron:CategoryDropDown_Initialize(level)
 		UIDropDownMenu_AddButton(category);
 	end
 
-	Cauldron:Debug("CategoryDropDown_Initialize exit");
+	Cauldron:debug("CategoryDropDown_Initialize exit");
 end
 
 --[[
 function Cauldron:CategoriesFilterAllCheck()
-	self:Debug("CategoriesFilterAllCheck enter");
+	self:debug("CategoriesFilterAllCheck enter");
 	
 	local skillName = CURRENT_TRADESKILL;
 	if IsTradeSkillLinked() then
@@ -1275,14 +1322,14 @@ function Cauldron:CategoriesFilterAllCheck()
 		end
 	end
 
-	self:Debug("CategoriesFilterAllCheck exit");
+	self:debug("CategoriesFilterAllCheck exit");
 	
 	return checked;
 end
 --]]
 
 function Cauldron:CategoryDropDown_SetCategory(info)
-	self:Debug("CategoryDropDown_SetCategory enter");
+	self:debug("CategoryDropDown_SetCategory enter");
 	
 	local skillName = CURRENT_TRADESKILL;
 	if IsTradeSkillLinked() then
@@ -1302,20 +1349,20 @@ function Cauldron:CategoryDropDown_SetCategory(info)
 			end
 
 			-- check the clicked item
-			self.db.realm.userdata[self.vars.playername].skills[skillName].window.categories[info.arg1].shown = true;
+			Cauldron.db.realm.userdata[self.vars.playername].skills[skillName].window.categories[info.arg1].shown = true;
 		else
-			self.db.realm.userdata[self.vars.playername].skills[skillName].window.categories[info.arg1].shown = not Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[CURRENT_TRADESKILL].window.categories[info.arg1].shown;
+			Cauldron.db.realm.userdata[self.vars.playername].skills[skillName].window.categories[info.arg1].shown = not Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[CURRENT_TRADESKILL].window.categories[info.arg1].shown;
 		end
 	end
 
 	-- update the UI
 	Cauldron:UpdateSkillList();
 
-	self:Debug("CategoryDropDown_SetCategory exit");
+	self:debug("CategoryDropDown_SetCategory exit");
 end
 
 function Cauldron:CollapseAllButton_OnClick(button)
-	self:Debug("CollapseAllButton_OnClick enter");
+	self:debug("CollapseAllButton_OnClick enter");
 	
 	local skillName = CURRENT_TRADESKILL;
 	if IsTradeSkillLinked() then
@@ -1323,18 +1370,18 @@ function Cauldron:CollapseAllButton_OnClick(button)
 	end
 
 	-- reset all the expanded fields to false
-	for name, info in pairs(self.db.realm.userdata[self.vars.playername].skills[skillName].window.skills[skillName]) do
+	for name, info in pairs(Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.skills[skillName]) do
 		info.expanded = false;
 	end
 
 	-- update the UI
 	Cauldron:UpdateSkillList();
 	
-	self:Debug("CollapseAllButton_OnClick exit");
+	self:debug("CollapseAllButton_OnClick exit");
 end
 
 function Cauldron:CollapseItemButton_OnClick(button)
-	self:Debug("CollapseItemButton_OnClick enter");
+	self:debug("CollapseItemButton_OnClick enter");
 
 	local skillName = CURRENT_TRADESKILL;
 	if IsTradeSkillLinked() then
@@ -1343,19 +1390,19 @@ function Cauldron:CollapseItemButton_OnClick(button)
 
 	local skillInfo = button.skillInfo;
 
-	self.db.realm.userdata[self.vars.playername].skills[skillName].window.skills[skillName][skillInfo.name].expanded = not self.db.realm.userdata[self.vars.playername].skills[skillName].window.skills[skillName][skillInfo.name].expanded
+	Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.skills[skillName][skillInfo.name].expanded = not Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.skills[skillName][skillInfo.name].expanded
 	
 	-- update the UI
 	Cauldron:UpdateSkillList();
 	
-	self:Debug("CollapseItemButton_OnClick exit");
+	self:debug("CollapseItemButton_OnClick exit");
 end
 
 function Cauldron:SkillItem_OnEnter(frame)
-	self:Debug("SkillItem_OnEnter enter");
+	self:debug("SkillItem_OnEnter enter");
 
 	local id = frame:GetID();
-	self:Debug("SkillItem_OnEnter: id="..id);
+	self:debug("SkillItem_OnEnter: id="..id);
 	
 	local name = _G["CauldronSkillItem"..id.."SkillName"];
 	if name then
@@ -1364,61 +1411,61 @@ function Cauldron:SkillItem_OnEnter(frame)
 	
 	-- TODO
 
-	self:Debug("SkillItem_OnEnter exit");
+	self:debug("SkillItem_OnEnter exit");
 end
 
 function Cauldron:SkillItem_OnLeave(frame)
-	self:Debug("SkillItem_OnLeave enter");
+	self:debug("SkillItem_OnLeave enter");
 
 
 
-	self:Debug("SkillItem_OnLeave exit");
+	self:debug("SkillItem_OnLeave exit");
 end
 
 function Cauldron:SkillItem_OnClick(frame, button, down)
-	self:Debug("SkillItem_OnClick enter");
+	self:debug("SkillItem_OnClick enter");
 
 	local skillName = CURRENT_TRADESKILL;
 	if IsTradeSkillLinked() then
 		skillName = "Linked-"..skillName;
 	end
-	self:Debug("SkillItem_OnClick: skillName="..skillName);
+	self:debug("SkillItem_OnClick: skillName="..skillName);
 
 	-- select this frame
-	self.db.realm.userdata[self.vars.playername].skills[skillName].window.selected = frame.skillIndex;
+	Cauldron.db.realm.userdata[self.vars.playername].skills[skillName].window.selected = frame.skillIndex;
 	
 	-- update the UI
 	Cauldron:UpdateSkillList();
 	Cauldron:UpdateButtons();
 	
-	self:Debug("SkillItem_OnClick exit");
+	self:debug("SkillItem_OnClick exit");
 end
 
 function Cauldron:TradeSkillFilter_OnTextChanged(frame)
-	self:Debug("TradeSkillFilter_OnTextChanged enter");
+	self:debug("TradeSkillFilter_OnTextChanged enter");
 	
 	-- update the UI
 	Cauldron:UpdateSkillList();
 
-	self:Debug("TradeSkillFilter_OnTextChanged exit");
+	self:debug("TradeSkillFilter_OnTextChanged exit");
 end
 
 function Cauldron:AmountDecrement_OnClick()
-	self:Debug("AmountDecrement_OnClick enter");
+	self:debug("AmountDecrement_OnClick enter");
 	
 	local num = CauldronAmountInputBox:GetNumber();
 	num = math.max(1, num - 1);
 	CauldronAmountInputBox:SetNumber(num);
 
-	self:Debug("AmountDecrement_OnClick exit");
+	self:debug("AmountDecrement_OnClick exit");
 end
 
 function Cauldron:AmountIncrement_OnClick()
-	self:Debug("AmountIncrement_OnClick enter");
+	self:debug("AmountIncrement_OnClick enter");
 	
 	local num = CauldronAmountInputBox:GetNumber();
 	num = math.min(999, num + 1);
 	CauldronAmountInputBox:SetNumber(num);
 
-	self:Debug("AmountIncrement_OnClick exit");
+	self:debug("AmountIncrement_OnClick exit");
 end

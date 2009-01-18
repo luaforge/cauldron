@@ -1,22 +1,22 @@
--- $Revision: 1.1 $
+-- $Revision: 1.2 $
 -- Cauldron utility functions
 
 function Cauldron:GetAltReagentCount(reagentInfo)
-	self:Debug("GetAltReagentCount enter");
+	self:debug("GetAltReagentCount enter");
 
 	-- TODO
 
-	self:Debug("GetAltReagentCount exit");
+	self:debug("GetAltReagentCount exit");
 end
 
 function Cauldron:GetPotentialCraftCount(skill)
-	self:Debug("GetPotentialCraftCount enter");
+	self:debug("GetPotentialCraftCount enter");
 
 	local count = 0;
 	
 	-- TODO
 
-	self:Debug("GetPotentialCraftCount exit");
+	self:debug("GetPotentialCraftCount exit");
 
 	return count;
 end

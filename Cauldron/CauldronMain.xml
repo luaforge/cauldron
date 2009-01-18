@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
-    <!-- $Revision: 1.1 $ -->
+    <!-- $Revision: 1.2 $ -->
 
     <!-- Templates -->
     <Button name="CauldronButtonTemplate" inherits="UIPanelButtonTemplate"
@@ -105,7 +105,7 @@
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT">
 									<Offset>
-										<AbsDimension x="-5" y="2"/>
+										<AbsDimension x="-2" y="2"/>
 									</Offset>
 								</Anchor>
 							</Anchors>
@@ -326,7 +326,7 @@
 						<FontString name="$parentCount" inherits="NumberFontNormal" justifyH="RIGHT" hidden="false">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT">
-									<Offset x="-5" y="2"/>
+									<Offset x="-2" y="2"/>
 								</Anchor>
 							</Anchors>
 						</FontString>
