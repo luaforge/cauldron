@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
-    <!-- $Revision: 1.2 $ -->
+    <!-- $Revision: 1.3 $ -->
 
     <!-- Templates -->
     <Button name="CauldronButtonTemplate" inherits="UIPanelButtonTemplate"
@@ -581,9 +581,7 @@
     <Frame name="CauldronFrame" toplevel="true" frameStrata="MEDIUM"
            movable="true" resizable="false" parent="UIParent" enableMouse="true"
            hidden="true">
-        <Size>
-            <AbsDimension x="692" y="465" />
-        </Size>
+        <Size x="692" y="465" />
         <Anchors>
             <Anchor point="CENTER" />
         </Anchors>

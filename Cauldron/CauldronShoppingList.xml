@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
-    <!-- $Revision: 1.2 $ -->
+    <!-- $Revision: 1.3 $ -->
     
     <!-- templates -->
     <Frame name="CauldronShoppingListRequestorTemplate" virtual="true">
@@ -185,9 +185,9 @@
 			<OnMouseUp>
 				if button == "LeftButton" then
 					self:StopMovingOrSizing();
-					self.isResizing = false
+					self.isResizing = false;
 					-- TradeskillInfoUI:Frame_Update()
-					CauldronShopping:SaveShoppingListFramePosition();
+					-- CauldronShopping:SaveShoppingListFramePosition();
 				end
 			</OnMouseUp>
 			<OnSizeChanged>

@@ -1,4 +1,4 @@
--- $Revision: 1.2 $
+-- $Revision: 1.3 $
 -- Cauldron tradeskill functions
 
 --[[
@@ -195,9 +195,11 @@ function Cauldron:GetDefaultCategories(player, skillName)
 	
 	if self.db then
 		for name, info in pairs(self.db.realm.userdata[player].skills[skillName].recipes) do
-			categories[info.defaultCategory] = true;
+			table.insert(categories, info.defaultCategory);
 		end
 	end
+
+	table.sort(categories);
 
 	self:debug("GetDefaultCategories exit");
 	
@@ -209,9 +211,15 @@ function Cauldron:GetCategories(skillList)
 
 	local categories = {};
 	
-	for _, info in ipairs(skillList) do
-		categories[info.defaultCategory] = true;
+	if not skillList then
+		return categories;
 	end
+	
+	for _, info in ipairs(skillList) do
+		table.insert(categories, info.defaultCategory);
+	end
+	
+	table.sort(categories);
 
 	self:debug("GetCategories exit");
 	
@@ -295,6 +303,7 @@ function Cauldron:GetSkillList(playername, skillName)
 		
 		-- check slot
 		local slotInfo = self.db.realm.userdata[playername].skills[skillName].window.slots[recipe.slot];
+		self:debug("slotInfo: "..tostring(slotInfo));
 		if slotInfo then -- more
 			self:debug("skipping recipe: "..name.." (slot: "..recipe.slot..")");
 			add = false;
@@ -328,9 +337,16 @@ function Cauldron:GetSkillList(playername, skillName)
 	
 	-- sort the list
 	table.sort(skills, function(r1, r2)
+			if (not r1) or (not r2) then
+				return true;
+			end
+			
+			self:debug("GetSkillList: sorting: r1.name="..r1.name.."; r2.name="..r2.name);
 			if self.db.realm.userdata[playername].skills[skillName].window.filter.sortAlpha then
+				self:debug("GetSkillList: sorting by alpha");
 				return r1.name < r2.name;
 			elseif self.db.realm.userdata[playername].skills[skillName].window.filter.sortDifficulty then
+				self:debug("GetSkillList: sorting by difficulty");
 				local difficulty = {
 					optimal = 4,
 					medium = 3,
@@ -338,12 +354,16 @@ function Cauldron:GetSkillList(playername, skillName)
 					trivial = 1,
 				};
 				
-				return difficulty[r2.difficulty] < difficulty[r1.difficulty];
+				self:debug("GetSkillList: r1.difficulty="..r1.difficulty);
+				self:debug("GetSkillList: r2.difficulty="..r2.difficulty);
+				return difficulty[r1.difficulty] > difficulty[r2.difficulty];
 			elseif self.db.realm.userdata[playername].skills[skillName].window.filter.sortBenefit then
-				return 0; -- TODO
+				self:debug("GetSkillList: returning true for benefit sorting");
+				return true; -- TODO
 			end
 			
-			return 0;
+			self:debug("GetSkillList: returning default true");
+			return true;
 		end);
 
 	self:debug("GetSkillList exit");

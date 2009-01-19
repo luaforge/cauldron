@@ -1,4 +1,4 @@
--- $Revision: 1.2 $
+-- $Revision: 1.3 $
 -- Cauldron language file: enUS
 
 local L = LibStub("AceLocale-3.0"):NewLocale("Cauldron", "enUS", true)
@@ -76,7 +76,7 @@ L["You will need:"] = true
 L["Have %d"] = true
 L[", need %d"] = true
 
-L["Crafting %s, quantity: %d..."] = true
+L["Crafting %1$d of %2$s..."] = true
 
 L["Remove this item from the queue"] = true
 L["Increase the priority of this item"] = true

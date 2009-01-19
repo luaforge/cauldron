@@ -1,4 +1,4 @@
--- $Revision: 1.2 $
+-- $Revision: 1.3 $
 -- Cauldron user interface logic
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Cauldron")
@@ -88,6 +88,11 @@ function Cauldron:Frame_Update()
 		end
 		CURRENT_TRADESKILL = name;
 	end
+	
+	-- update the frame dimensions
+    -- <Size x="692" y="465" />
+	CauldronFrame:SetHeight(465);
+	CauldronFrame:SetWidth(692);
 	
 	-- display skill name, level/progress
 	self:debug("Frame_Update: display skill level/progress");
@@ -934,6 +939,7 @@ function Cauldron:FilterDropDown_Initialize(level)
 	};
 	UIDropDownMenu_AddButton(sortDifficulty);
 
+	--[[
 	local sortBenefit = {
 		text = L["By benefit"],
 		checked = Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[CURRENT_TRADESKILL].window.filter.sortBenefit,
@@ -944,6 +950,7 @@ function Cauldron:FilterDropDown_Initialize(level)
 		arg2 = "",
 	};
 	UIDropDownMenu_AddButton(sortBenefit);
+	--]]
 	
 	-- spacer	
 	UIDropDownMenu_AddButton({
@@ -1183,7 +1190,7 @@ function Cauldron:InvSlotDropDown_Initialize(level)
 	
 	local all = {
 		text = L["All slots"],
-		checked = Cauldron:SlotsFilterAllCheck(),
+		checked = false,
 		tooltipTitle = L["All slots"],
 		func = function(arg1, arg2) Cauldron:InvSlotDropDown_SetSlot(arg1) end,
 		arg1 = "all",
@@ -1239,13 +1246,22 @@ function Cauldron:InvSlotDropDown_SetSlot(info)
 	if IsTradeSkillLinked() then
 		skillName = "Linked-"..skillName;
 	end
+	
+	self:debug("InvSlotDropDown_SetSlot: info.arg1="..info.arg1);
 
 	if info.arg1 == "all" then
+		self:debug("InvSlotDropDown_SetSlot: selecting all slots...");
 		for name, _ in pairs(Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots) do
+			self:debug("InvSlotDropDown_SetSlot: name="..name);
 			Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots[name] = true;
 		end
 	else
-		Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots[info.arg1] = not Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[CURRENT_TRADESKILL].window.slots[info.arg1];
+		self:debug("InvSlotDropDown_SetSlot: select a specific slot: "..info.arg1);
+		if not Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots[info.arg1] then
+			Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots[info.arg1] = true;
+		else
+			Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots[info.arg1] = not Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.slots[info.arg1];
+		end
 	end
 
 	self:debug("InvSlotDropDown_SetSlot exit");
@@ -1289,7 +1305,7 @@ function Cauldron:CategoryDropDown_Initialize(level)
 	
 	local categories = Cauldron:GetDefaultCategories(Cauldron.vars.playername, skillName);
 	
-	for name, _ in pairs(categories) do
+	for i, name in ipairs(categories) do
 		local category = {
 			text = name,
 			checked = Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[skillName].window.categories[name].shown,

@@ -1,11 +1,11 @@
--- $Revision: 1.3 $
+-- $Revision: 1.4 $
 -- Cauldron main file
 
 Cauldron = LibStub("AceAddon-3.0"):NewAddon("Cauldron", "AceEvent-3.0", "AceTimer-3.0", "AceConsole-3.0", "AceHook-3.0", "LibLogger-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Cauldron")
 
-Cauldron.version = "1.0." .. string.sub("$Revision: 1.3 $", 12, -3);
-Cauldron.date = string.sub("$Date: 2009-01-19 16:53:16 $", 8, 17);
+Cauldron.version = "1.0." .. string.sub("$Revision: 1.4 $", 12, -3);
+Cauldron.date = string.sub("$Date: 2009-01-19 23:13:19 $", 8, 17);
 
 -- key binding names
 BINDING_HEADER_CAULDRON = "Cauldron";
@@ -22,7 +22,7 @@ Cauldron.libs.Abacus = LibStub("LibAbacus-3.0");
 Cauldron.libs.PT = LibStub("LibPeriodicTable-3.1");
 
 -- Cauldron:ToggleDebugLog(false);
-Cauldron:SetLogLevel(Cauldron.logLevels.INFO);
+Cauldron:SetLogLevel(Cauldron.logLevels.DEBUG);
 
 CURRENT_TRADESKILL = "";
 
@@ -187,7 +187,7 @@ end
 function Cauldron:OnSkillUpdate()
 	self:debug("OnSkillUpdate enter");
 
-	self:UpdateSkills();
+--	self:UpdateSkills();
 --	self:UpdateSpecializations();
 
 --	if not IsTradeSkillLinked() then
@@ -196,6 +196,12 @@ function Cauldron:OnSkillUpdate()
 --		end
 --	end
 
+	if CURRENT_TRADESKILL ~= "" then
+		Cauldron.db.realm.userdata[Cauldron.vars.playername].skills[CURRENT_TRADESKILL].window.selected = 0;
+	end
+
+	self:Frame_Update();
+	
 	self:debug("OnSkillUpdate exit");
 end
 
@@ -217,16 +223,20 @@ function Cauldron:OnBagUpdate()
 	end
 
 	if self.makingItem then
+		self:debug("OnBagUpdate: self.makingItem="..self.makingItem);
 		local count = GetItemCount(self.makingItem);
+		self:debug("OnBagUpdate: count="..count);
+		self:debug("OnBagUpdate: self.itemCurrentCount="..self.itemCurrentCount);
 		if count ~= self.itemCurrentCount then
-			local delta = self.itemCurrentCount - count;
-			CauldronQueue:AdjustItemCount(Cauldron:GetQueue(), self.makingItem, delta);
+			local delta = self.itemCurrentCount - count; -- TODO: is this necessary?
+			self:debug("OnBagUpdate: delta="..delta);
+			CauldronQueue:AdjustItemCount(Cauldron:GetQueue(), self.makingItem, -1);
 		end
 	else
 		--
 	end
 	
-	Cauldron:UpdateSkills();
+	-- Cauldron:UpdateSkills();
 	
 	self:Frame_Update();
 	
@@ -423,10 +433,12 @@ function Cauldron:ProcessItem(skillInfo, amount)
 	if ((not PartialPlayTime()) and (not NoPlayTime())) then
 		-- record the item we're making
 		self.makingItem, _ = GetItemInfo(skillInfo.link);
+		self:debug("ProcessItem: self.makingItem="..self.makingItem);
 		self.itemCurrentCount = GetItemCount(skillInfo.link);
+		self:debug("ProcessItem: self.itemCurrentCount="..self.itemCurrentCount);
 		
 		-- tell the user what we're doing
-		self:Print(string.format(L["Crafting %s, quantity: %d..."], self.makingItem, amount));
+		self:Print(string.format(L["Crafting %1$d of %2$s..."], amount, self.makingItem));
 		
 		-- do it
 		DoTradeSkill(skillInfo.index, amount);
