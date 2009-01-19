@@ -1,11 +1,11 @@
--- $Revision: 1.2 $
+-- $Revision: 1.3 $
 -- Cauldron main file
 
 Cauldron = LibStub("AceAddon-3.0"):NewAddon("Cauldron", "AceEvent-3.0", "AceTimer-3.0", "AceConsole-3.0", "AceHook-3.0", "LibLogger-1.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Cauldron")
 
-Cauldron.version = "0.1." .. string.sub("$Revision: 1.2 $", 12, -3);
-Cauldron.date = string.sub("$Date: 2009-01-18 03:14:51 $", 8, 17);
+Cauldron.version = "1.0." .. string.sub("$Revision: 1.3 $", 12, -3);
+Cauldron.date = string.sub("$Date: 2009-01-19 16:53:16 $", 8, 17);
 
 -- key binding names
 BINDING_HEADER_CAULDRON = "Cauldron";
